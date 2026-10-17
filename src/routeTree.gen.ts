@@ -10,33 +10,63 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CorbeilleRouteImport } from './routes/corbeille'
+import { Route as ListesRouteImport } from './routes/listes'
+import { Route as MateriauxRouteImport } from './routes/materiaux'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CorbeilleRoute = CorbeilleRouteImport.update({
+  id: '/corbeille',
+  path: '/corbeille',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ListesRoute = ListesRouteImport.update({
+  id: '/listes',
+  path: '/listes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MateriauxRoute = MateriauxRouteImport.update({
+  id: '/materiaux',
+  path: '/materiaux',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/corbeille': typeof CorbeilleRoute
+  '/listes': typeof ListesRoute
+  '/materiaux': typeof MateriauxRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/corbeille': typeof CorbeilleRoute
+  '/listes': typeof ListesRoute
+  '/materiaux': typeof MateriauxRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/corbeille': typeof CorbeilleRoute
+  '/listes': typeof ListesRoute
+  '/materiaux': typeof MateriauxRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/corbeille' | '/listes' | '/materiaux'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/corbeille' | '/listes' | '/materiaux'
+  id: '__root__' | '/' | '/corbeille' | '/listes' | '/materiaux'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CorbeilleRoute: typeof CorbeilleRoute
+  ListesRoute: typeof ListesRoute
+  MateriauxRoute: typeof MateriauxRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +78,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/corbeille': {
+      id: '/corbeille'
+      path: '/corbeille'
+      fullPath: '/corbeille'
+      preLoaderRoute: typeof CorbeilleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/listes': {
+      id: '/listes'
+      path: '/listes'
+      fullPath: '/listes'
+      preLoaderRoute: typeof ListesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/materiaux': {
+      id: '/materiaux'
+      path: '/materiaux'
+      fullPath: '/materiaux'
+      preLoaderRoute: typeof MateriauxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CorbeilleRoute: CorbeilleRoute,
+  ListesRoute: ListesRoute,
+  MateriauxRoute: MateriauxRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
