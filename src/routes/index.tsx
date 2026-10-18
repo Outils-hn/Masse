@@ -131,8 +131,8 @@ function Editor({
   activeMats: Material[];
   onSave: () => void;
   onDuplicate: () => void;
-  onDelete?: () => void;
-  updatedAt?: string;
+  onDelete: (() => void) | undefined;
+  updatedAt: string | undefined;
 }) {
   const set = (p: Partial<ElementData>) => setDraft({ ...draft, ...p });
   const setComp = (i: number, p: Partial<Component>) => set({ components: draft.components.map((c, j) => (j === i ? { ...c, ...p } : c)) });
@@ -140,12 +140,12 @@ function Editor({
     const arr = [...draft.components];
     const j = i + d;
     if (j < 0 || j >= arr.length) return;
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+    [arr[i], arr[j]] = [arr[j]!, arr[i]!];
     set({ components: arr });
   };
   const addComp = () => {
     const m = activeMats[0];
-    if (!m) return toast.error("Ajoutez d'abord un matériau à la bibliothèque.");
+    if (!m) { toast.error("Ajoutez d'abord un matériau à la bibliothèque."); return; }
     set({ components: [...draft.components, { material_id: m.id, thickness_mm: 2, faces: 1, length_m: 1, count: 1, custom_area_m2: null, glass_composition: "" }] });
   };
   const res = elementResult(draft, mats);

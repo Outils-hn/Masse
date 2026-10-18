@@ -44,7 +44,7 @@ function MaterialsPage() {
     }
   };
   const del = async (m: Material) => {
-    if (used.has(m.id)) return toast.error("Ce matériau est utilisé dans un élément : suppression impossible.");
+    if (used.has(m.id)) { toast.error("Ce matériau est utilisé dans un élément : suppression impossible."); return; }
     if (!confirm(`Mettre « ${m.name} » à la corbeille ?`)) return;
     const r = await write("set_deleted", { p_table: "materials", p_id: m.id, p_deleted: true });
     if (r) {

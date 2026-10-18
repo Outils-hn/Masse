@@ -86,11 +86,11 @@ export function glassThickness(comp: string): number {
   if (!parts.length) return NaN;
   let total = 0;
   for (let i = 0; i < parts.length; i += 2) {
-    const p = parts[i].replace(",", ".");
+    const p = parts[i]!.replace(",", ".");
     const lam = p.match(/^(\d+)\.(\d+)$/);
-    if (lam && lam[1].length >= 2 && lam[1].length % 2 === 0) {
-      const half = lam[1].length / 2;
-      total += Number(lam[1].slice(0, half)) + Number(lam[1].slice(half)) + Number(lam[2]) * PVB_LAYER_MM;
+    if (lam && lam[1]!.length >= 2 && lam[1]!.length % 2 === 0) {
+      const a = lam[1]!, half = a.length / 2;
+      total += Number(a.slice(0, half)) + Number(a.slice(half)) + Number(lam[2]) * PVB_LAYER_MM;
     } else {
       const v = Number(p);
       if (!isFinite(v)) return NaN;
