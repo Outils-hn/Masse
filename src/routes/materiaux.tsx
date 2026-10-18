@@ -5,6 +5,7 @@ import { useData, useRefresh, fmtDate } from "@/lib/queries";
 import { write } from "@/lib/pin";
 import { NumInput } from "@/components/NumInput";
 import { CATEGORIES, MODES, fmt, type Material, type Mode } from "@/lib/calc";
+import { isUnverified } from "@/components/Fiche";
 
 export const Route = createFileRoute("/materiaux")({
   head: () => ({
@@ -96,7 +97,10 @@ function MaterialsPage() {
               <NumInput className="mt-1" digits={3} value={edit.value} onChange={(v) => setEdit({ ...edit, value: v ?? 0 })} />
             </label>
             <label className="text-xs text-muted-foreground">Source
-              <input className="field mt-1 text-foreground" value={edit.source} onChange={(e) => setEdit({ ...edit, source: e.target.value })} />
+              <input className="field mt-1 text-foreground" value={edit.source} placeholder="ex. fiche technique Rockwool 2025" onChange={(e) => setEdit({ ...edit, source: e.target.value })} />
+              {/à vérifier/i.test(edit.source) && (
+                <span className="mt-1 block text-[0.7rem] text-[color:var(--warning)]">Remplacez par la référence de votre fiche technique pour retirer « À vérifier ».</span>
+              )}
             </label>
             <label className="text-xs text-muted-foreground lg:col-span-2">Note
               <input className="field mt-1 text-foreground" value={edit.note} onChange={(e) => setEdit({ ...edit, note: e.target.value })} />
@@ -120,7 +124,11 @@ function MaterialsPage() {
                   <td>{CATEGORIES[m.category] ?? m.category}</td>
                   <td>{MODES[m.mode].label}</td>
                   <td className="num whitespace-nowrap">{fmt(m.value, m.mode === "density" ? 0 : 2)} <span className="text-muted-foreground">{MODES[m.mode].unit}</span></td>
-                  <td className="text-xs text-muted-foreground">{m.source}</td>
+                  <td className="text-xs text-muted-foreground">
+                    {/* Valeur standard jamais verifiee : pastille bien visible, qui disparait
+                        des que la source est remplacee (ex. nom de la fiche technique) */}
+                    {isUnverified(m) ? <span className="badge-warn" title={m.source}>À vérifier</span> : m.source}
+                  </td>
                   <td className="whitespace-nowrap font-mono text-xs text-muted-foreground">{fmtDate(m.updated_at)}</td>
                   <td className="whitespace-nowrap text-right">
                     <button className="btn btn-sm" onClick={() => setEdit({ ...m })}>Modifier</button>{" "}

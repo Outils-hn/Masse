@@ -120,6 +120,7 @@ export function componentWeight(
   m: Material | undefined,
   el: { length_mm: number; height_mm: number },
 ): { kg: number; formula: string } {
+  if (!c.material_id) return { kg: 0, formula: "Choisissez un matériau" };
   if (!m) return { kg: 0, formula: "Matériau introuvable" };
   const area = c.custom_area_m2 ?? baseArea(el);
   const v = Number(m.value);

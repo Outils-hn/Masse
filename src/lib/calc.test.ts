@@ -24,6 +24,11 @@ describe("calc", () => {
     expect(inputText(2, 3)).toBe("2");
     expect(inputText(null)).toBe("");
   });
+  it("component without material weighs 0 and asks for a choice", () => {
+    const r = componentWeight({ material_id: "", thickness_mm: 0, faces: 1, length_m: 1, count: 1, custom_area_m2: null, glass_composition: "" }, undefined, { length_mm: 1000, height_mm: 1000 });
+    expect(r.kg).toBe(0);
+    expect(r.formula).toMatch(/Choisissez/);
+  });
   it("total rounds up with 5 % markup", () => {
     const r = elementResult({ name: "x", description: "", length_mm: 1000, height_mm: 1200, markup_pct: 5, components: [{ material_id: "a", thickness_mm: 2, faces: 2, length_m: 0, count: 1, custom_area_m2: null, glass_composition: "" }] }, new Map([["a", alu]]));
     expect(r.total).toBe(14); // 13.608 -> 14

@@ -171,6 +171,11 @@
   --input: oklch(0.88 0.008 260);
   --ring: oklch(0.49 0.11 33);
   --hatch: oklch(0.279 0.041 260 / 3.5%);
+  /* Rouge "danger" en sRGB classique : la version oklch tres saturee d'origine
+     sortait de la gamme d'ecran et s'affichait en jaune dans certains navigateurs */
+  --destructive: #b42318;
+  --warning: #b54708;
+  --warning-soft: #fef0e6;
 }
 
 body {
@@ -228,7 +233,7 @@ body {
 }
 @utility btn-danger {
   color: var(--destructive);
-  &:hover { background: oklch(0.577 0.245 27.325 / 8%); }
+  &:hover { background: #b423180f; }
 }
 @utility btn-sm { padding: 0.2rem 0.5rem; font-size: 0.78rem; }
 @utility nav-link {
@@ -250,6 +255,7 @@ body {
   width: 100%;
   font-size: 0.85rem;
   border-collapse: collapse;
+  & th.text-right { text-align: right; }
   & th { text-align: left; font-weight: 500; color: var(--muted-foreground); font-size: 0.75rem; padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--border); }
   & td { padding: 0.45rem 0.5rem; border-bottom: 1px solid var(--border); vertical-align: top; }
 }
@@ -259,6 +265,21 @@ body {
   font-weight: 600;
   line-height: 1;
   color: var(--heading);
+}
+
+/* Menus deroulants : style maison (le rendu natif s'affichait barre/casse sur certains navigateurs) */
+select.field {
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' fill='none' stroke='%2364748b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 0.6rem center / 12px;
+  padding-right: 2rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+/* Pastille "A verifier" (materiaux encore en valeur standard) */
+.badge-warn {
+  display: inline-block; border-radius: 999px; padding: 0.05rem 0.5rem; font-size: 0.7rem; font-weight: 500;
+  color: var(--warning); background: var(--warning-soft); border: 1px solid #f9c79f; white-space: nowrap;
 }
 
 /* ---------- Fiche poids imprimable (voir src/components/Fiche.tsx) ---------- */
