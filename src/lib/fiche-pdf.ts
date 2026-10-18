@@ -103,6 +103,15 @@ function closing(doc: jsPDF, y: number, unverified: string[]) {
   }
 }
 
+/** Trace le trait du total sur la bonne page, par-dessus le tableau deja dessine. */
+function drawTotalLine(doc: jsPDF, at: { page: number; y: number } | null) {
+  if (!at) return;
+  const current = doc.getCurrentPageInfo().pageNumber;
+  doc.setPage(at.page);
+  doc.setDrawColor(...INK).setLineWidth(0.4).line(M, at.y, W(doc) - M, at.y);
+  doc.setPage(current);
+}
+
 const tableStyles = {
   styles: { font: "PlexSans", fontSize: 9, textColor: INK, cellPadding: { top: 2, bottom: 2, left: 1.5, right: 1.5 }, lineColor: LINE, lineWidth: 0 },
   headStyles: { font: "PlexSans", fontStyle: "normal" as const, fontSize: 7, textColor: MUTED, fillColor: [255, 255, 255] as RGB },
@@ -138,6 +147,9 @@ export async function exportElementPdf(el: ElementData, mats: Map<string, Materi
     y += 6;
   }
 
+  // Trait au-dessus du total : position memorisee pendant le dessin du tableau,
+  // puis trace a la fin (sinon le fond des cellules voisines le recouvre en partie)
+  let totalLine: { page: number; y: number } | null = null;
   autoTable(doc, {
     ...tableStyles,
     startY: y,
@@ -187,11 +199,12 @@ export async function exportElementPdf(el: ElementData, mats: Map<string, Materi
         if (isUnverified(line.m)) doc.setTextColor(...RED).text(" · à vérifier", x + doc.getTextWidth(mode), d.cell.y + 9);
       }
       if (d.section === "foot" && d.row.index === 2 && d.column.index === 0) {
-        doc.setDrawColor(...INK).setLineWidth(0.4).line(M, d.cell.y, w - M, d.cell.y);
+        totalLine = { page: doc.getCurrentPageInfo().pageNumber, y: d.cell.y };
       }
     },
   });
 
+  drawTotalLine(doc, totalLine);
   const endY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY;
   closing(doc, endY + 6, unverified);
   pdfSink.save(doc, `Fiche poids - ${safeName(el.name)}.pdf`);
@@ -225,6 +238,7 @@ export async function exportListPdf(name: string, rows: ListPdfRow[]) {
     ...(heaviest ? ([["Le plus lourd", `${heaviest.name} — ${heaviest.unit} kg`]] as [string, string][]) : []),
   ]);
 
+  let totalLine: { page: number; y: number } | null = null;
   autoTable(doc, {
     ...tableStyles,
     startY: y + 2,
@@ -252,11 +266,12 @@ export async function exportListPdf(name: string, rows: ListPdfRow[]) {
     },
     didDrawCell: (d) => {
       if (d.section === "foot" && d.column.index === 0) {
-        doc.setDrawColor(...INK).setLineWidth(0.4).line(M, d.cell.y, W(doc) - M, d.cell.y);
+        totalLine = { page: doc.getCurrentPageInfo().pageNumber, y: d.cell.y };
       }
     },
   });
 
+  drawTotalLine(doc, totalLine);
   const endY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY;
   closing(doc, endY + 6, unverified);
   pdfSink.save(doc, `Poids livraison - ${safeName(name)}.pdf`);
