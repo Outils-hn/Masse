@@ -49,7 +49,7 @@ function TrashPage() {
     try {
       p = JSON.parse(await f.text());
     } catch {
-      return toast.error("Fichier JSON illisible.");
+      toast.error("Fichier JSON illisible."); return;
     }
     if (!confirm("Importer ce fichier ? Les entrées existantes portant le même identifiant seront remplacées.")) return;
     const r = await write("import_all", { p });
