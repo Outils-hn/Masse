@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { useData, useRefresh, fmtDate, copyText, type ElementRow } from "@/lib/queries";
 import { write } from "@/lib/pin";
 import { NumInput } from "@/components/NumInput";
-import { ElementFiche, printWithTitle } from "@/components/Fiche";
+import { exportElementPdf } from "@/lib/fiche-pdf";
 import { CATEGORIES, MODES, elementResult, fmt, glassThickness, type Component, type ElementData, type Material } from "@/lib/calc";
 
 export const Route = createFileRoute("/")({
@@ -253,12 +253,11 @@ function Editor({
       toast.error("Enregistrez l'élément avant d'éditer sa fiche poids.");
       return;
     }
-    printWithTitle(`Fiche poids - ${draft.name}`);
+    exportElementPdf(draft, mats).catch(() => toast.error("Le PDF n'a pas pu être créé. Réessayez."));
   };
 
   return (
     <div className="space-y-6">
-      {saved && <ElementFiche el={draft} mats={mats} />}
       <section className="panel p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
@@ -387,7 +386,7 @@ function Editor({
           <h2 className="card-title">Résultats</h2>
           <div className="flex gap-2">
             <button className="btn btn-sm" onClick={copy}>Copier le détail</button>
-            <button className="btn btn-sm btn-primary" onClick={printFiche} title="Ouvre l'impression : choisissez « Enregistrer au format PDF »">Fiche PDF</button>
+            <button className="btn btn-sm btn-primary" onClick={printFiche} title="Télécharge la fiche en PDF">Fiche PDF</button>
           </div>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-4">

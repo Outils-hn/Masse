@@ -30,6 +30,13 @@ jobs:
         run: |
           set -o pipefail
           npx vitest run 2>&1 | tee step.log || { grep -E "FAIL|Error|expected|✗|×" step.log | head -n 20 | while IFS= read -r l; do echo "::error::$l"; done; exit 1; }
+      - name: Garder les PDF de test
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdf-test
+          path: test-output/
+          if-no-files-found: ignore
       - name: Controle TypeScript
         run: |
           set -o pipefail
