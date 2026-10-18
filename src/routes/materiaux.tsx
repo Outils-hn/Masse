@@ -113,7 +113,7 @@ function MaterialsPage() {
                   <td className="whitespace-nowrap font-mono text-xs text-muted-foreground">{fmtDate(m.updated_at)}</td>
                   <td className="whitespace-nowrap text-right">
                     <button className="btn btn-sm" onClick={() => setEdit({ ...m })}>Modifier</button>{" "}
-                    <button className="btn btn-sm" onClick={() => setEdit({ ...m, id: undefined, name: m.name + " (copie)" })}>Dupliquer</button>{" "}
+                    <button className="btn btn-sm" onClick={() => setEdit({ ...m, id: "", name: m.name + " (copie)" })}>Dupliquer</button>{" "}
                     <button className="btn btn-sm btn-danger" onClick={() => del(m)}>Supprimer</button>
                   </td>
                 </tr>
