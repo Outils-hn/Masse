@@ -181,6 +181,9 @@
 body {
   font-family: var(--font-sans);
   background-image: repeating-linear-gradient(45deg, var(--hatch) 0 1px, transparent 1px 9px);
+  /* Hachures fixees a l'ecran : sinon le motif est recalcule sur toute la hauteur
+     de la page et "saute" a chaque fois que la page s'allonge (ajout d'un composant) */
+  background-attachment: fixed;
 }
 
 @utility text-heading { color: var(--heading); }
@@ -288,9 +291,23 @@ select.field {
 @media print {
   @page { size: A4; margin: 14mm 12mm; }
   body > *:not(.print-root) { display: none !important; }
-  body { background: #fff !important; }
-  .print-root { display: block; }
+  html, body { background: #fff !important; margin: 0 !important; padding: 0 !important; min-width: 0 !important; width: auto !important; }
+  /* Largeur bornee a la page : evite que des cadres depassent a droite et soient coupes */
+  .print-root { display: block; width: 100%; max-width: 100%; overflow: hidden; }
 }
+.fiche, .fiche * { box-sizing: border-box; }
+.fiche { width: 100%; max-width: 100%; }
+.fiche-big > div { min-width: 0; }
+.fiche-tbl { table-layout: fixed; }
+.fiche-tbl td { overflow-wrap: anywhere; }
+/* Proportions des colonnes (tableau a largeur fixe) */
+.tbl-el th:nth-child(1) { width: 5%; }
+.tbl-el th:nth-child(2) { width: 25%; }
+.tbl-el th:nth-child(3) { width: 44%; }
+.tbl-el th:nth-child(4) { width: 14%; }
+.tbl-el th:nth-child(5) { width: 12%; }
+.tbl-list th:nth-child(1) { width: 40%; }
+.tbl-list th:nth-child(n+2) { width: 15%; }
 .fiche {
   color: #1e293b; background: #fff; font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 10.5pt;
   -webkit-print-color-adjust: exact; print-color-adjust: exact;

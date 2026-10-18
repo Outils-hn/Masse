@@ -87,7 +87,7 @@ export function ElementFiche({ el, mats }: { el: ElementData; mats: Map<string, 
           </div>
         )}
 
-        <table className="fiche-tbl">
+        <table className="fiche-tbl tbl-el">
           <thead>
             <tr><th></th><th>Composant</th><th>Calcul</th><th className="r">Poids (kg)</th><th className="r">Part</th></tr>
           </thead>
@@ -149,7 +149,7 @@ export function ListFiche({ name, rows }: { name: string; rows: ListFicheRow[] }
           {heaviest && <div><span>Le plus lourd</span>{heaviest.name} — {heaviest.unit} kg</div>}
         </div>
 
-        <table className="fiche-tbl">
+        <table className="fiche-tbl tbl-list">
           <thead>
             <tr><th>Élément</th><th className="r">Qté</th><th className="r">Unitaire (kg)</th><th className="r">Surface (m²)</th><th className="r">Total (kg)</th></tr>
           </thead>
