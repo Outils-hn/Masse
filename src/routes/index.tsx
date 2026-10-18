@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { useData, useRefresh, fmtDate, copyText, type ElementRow } from "@/lib/queries";
 import { write } from "@/lib/pin";
 import { NumInput } from "@/components/NumInput";
+import { ElementFiche, printWithTitle } from "@/components/Fiche";
 import { MODES, elementResult, fmt, glassThickness, type Component, type ElementData, type Material } from "@/lib/calc";
 
 export const Route = createFileRoute("/")({
@@ -163,6 +164,7 @@ function ElementsPage() {
           onDelete={selId ? remove : undefined}
           updatedAt={elements.find((e) => e.id === selId)?.updated_at}
           dirty={dirty}
+          saved={selId !== null}
         />
       ) : (
         <div className="panel p-8 text-center text-muted-foreground">Créez un élément pour commencer.</div>
@@ -172,7 +174,7 @@ function ElementsPage() {
 }
 
 function Editor({
-  draft, setDraft, mats, activeMats, onSave, onDuplicate, onDelete, updatedAt, dirty,
+  draft, setDraft, mats, activeMats, onSave, onDuplicate, onDelete, updatedAt, dirty, saved,
 }: {
   draft: ElementData;
   setDraft: (d: ElementData) => void;
@@ -183,6 +185,7 @@ function Editor({
   onDelete: (() => void) | undefined;
   updatedAt: string | undefined;
   dirty: boolean;
+  saved: boolean;
 }) {
   const set = (p: Partial<ElementData>) => setDraft({ ...draft, ...p });
   const setComp = (i: number, p: Partial<Component>) => set({ components: draft.components.map((c, j) => (j === i ? { ...c, ...p } : c)) });
@@ -217,8 +220,18 @@ function Editor({
     toast.success("Détail copié — collez-le dans Excel.");
   };
 
+  // La fiche doit refleter ce qui est en base : pas d'impression d'un brouillon
+  const printFiche = () => {
+    if (!saved || dirty) {
+      toast.error("Enregistrez l'élément avant d'éditer sa fiche poids.");
+      return;
+    }
+    printWithTitle(`Fiche poids - ${draft.name}`);
+  };
+
   return (
     <div className="space-y-6">
+      {saved && <ElementFiche el={draft} mats={mats} />}
       <section className="panel p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
@@ -333,7 +346,10 @@ function Editor({
       <section className="panel p-5">
         <div className="flex items-center justify-between">
           <h2 className="card-title">Résultats</h2>
-          <button className="btn btn-sm" onClick={copy}>Copier le détail</button>
+          <div className="flex gap-2">
+            <button className="btn btn-sm" onClick={copy}>Copier le détail</button>
+            <button className="btn btn-sm btn-primary" onClick={printFiche} title="Ouvre l'impression : choisissez « Enregistrer au format PDF »">Fiche PDF</button>
+          </div>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-4">
           <div className="rounded-md bg-muted p-4">
