@@ -16,6 +16,9 @@ const SOFT: RGB = [248, 245, 243];
 const SEG: RGB[] = [[154, 74, 58], [63, 107, 92], [192, 138, 62], [91, 107, 140], [140, 91, 122], [30, 41, 59], [122, 140, 91]];
 
 const M = 14; // marge (mm)
+
+/** Sortie du PDF : telechargement dans l'appli, remplacable dans les tests. */
+export const pdfSink = { save: (doc: jsPDF, name: string) => void doc.save(name) };
 const today = () => new Date().toLocaleDateString("fr-CH", { day: "2-digit", month: "2-digit", year: "numeric" });
 const safeName = (s: string) => s.replace(/[\\/:*?"<>|]/g, "-").trim() || "sans nom";
 
@@ -191,7 +194,7 @@ export async function exportElementPdf(el: ElementData, mats: Map<string, Materi
 
   const endY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY;
   closing(doc, endY + 6, unverified);
-  doc.save(`Fiche poids - ${safeName(el.name)}.pdf`);
+  pdfSink.save(doc, `Fiche poids - ${safeName(el.name)}.pdf`);
 }
 
 export interface ListPdfRow {
@@ -256,5 +259,5 @@ export async function exportListPdf(name: string, rows: ListPdfRow[]) {
 
   const endY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY;
   closing(doc, endY + 6, unverified);
-  doc.save(`Poids livraison - ${safeName(name)}.pdf`);
+  pdfSink.save(doc, `Poids livraison - ${safeName(name)}.pdf`);
 }

@@ -15,8 +15,7 @@ vi.mock("./pdf-fonts", () => ({
   },
 }));
 
-import { jsPDF } from "jspdf";
-import { exportElementPdf, exportListPdf } from "./fiche-pdf";
+import { exportElementPdf, exportListPdf, pdfSink } from "./fiche-pdf";
 import type { Material } from "./calc";
 
 const mat = (id: string, name: string, mode: Material["mode"], value: number, source = "valeur standard à vérifier"): Material =>
@@ -26,16 +25,15 @@ let saved: { name: string; pages: number; size: number }[] = [];
 beforeEach(() => {
   saved = [];
   // On intercepte le telechargement : on verifie le document au lieu de le sauver
-  vi.spyOn(jsPDF.API, "save").mockImplementation(function (this: JsPDF, name: string) {
-    const buf = this.output("arraybuffer");
-    saved.push({ name, pages: this.getNumberOfPages(), size: buf.byteLength });
+  pdfSink.save = (doc: JsPDF, name: string) => {
+    const buf = doc.output("arraybuffer");
+    saved.push({ name, pages: doc.getNumberOfPages(), size: buf.byteLength });
     // En CI, on garde les PDF pour pouvoir les regarder (artefact de la verification)
     if (process.env["CI"]) {
       mkdirSync("test-output", { recursive: true });
       writeFileSync(path.join("test-output", name), Buffer.from(buf));
     }
-    return this;
-  } as never);
+  };
 });
 
 describe("fiche PDF", () => {
