@@ -1,6 +1,7 @@
 // Controle d'un fichier de sauvegarde Masse avant import.
 
-type Row = Record<string, unknown>;
+// Champs utilises par le controle declares explicitement (exige par la config TypeScript)
+type Row = { id?: unknown; name?: unknown; mode?: unknown; material_id?: unknown; element_id?: unknown; [k: string]: unknown };
 export type Backup = { app?: unknown; materials?: Row[]; elements?: Row[]; components?: Row[]; lists?: Row[]; list_items?: Row[] };
 
 /** Renvoie un message d'erreur lisible si le fichier n'est pas une sauvegarde Masse valide, sinon null. */
