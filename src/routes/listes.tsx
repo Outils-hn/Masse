@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { createFileRoute, useBlocker } from "@tanstack/react-router";
+import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useData, useRefresh, copyText, fmtDate } from "@/lib/queries";
 import { write } from "@/lib/pin";
@@ -19,11 +19,28 @@ export const Route = createFileRoute("/listes")({
 });
 
 type Draft = { id?: string; name: string; items: { element_id: string; quantity: number }[] };
+/** Empreinte du contenu modifiable d'une liste, pour detecter les modifs non enregistrees. */
+const snapshot = (d: Draft | null) => (d ? JSON.stringify([d.name, d.items.map((i) => [i.element_id, i.quantity])]) : "");
+const LEAVE_MSG = "Des modifications de la liste ne sont pas enregistrées. Les abandonner ?";
 
 function ListsPage() {
   const { data, isLoading } = useData();
   const refresh = useRefresh();
   const [draft, setDraft] = useState<Draft | null>(null);
+  const [baseline, setBaseline] = useState("");
+  const dirty = draft !== null && snapshot(draft) !== baseline;
+  const dirtyRef = useRef(dirty);
+  dirtyRef.current = dirty;
+  useBlocker({
+    shouldBlockFn: () => dirtyRef.current && !confirm(LEAVE_MSG),
+    enableBeforeUnload: () => dirtyRef.current,
+  });
+  // Ouvre une liste (ou une nouvelle) en memorisant son etat de depart
+  const open = (d: Draft | null) => {
+    if (dirtyRef.current && !confirm(LEAVE_MSG)) return;
+    setDraft(d);
+    setBaseline(d?.id ? snapshot(d) : "");
+  };
 
   const mats = useMemo(() => new Map((data?.materials ?? []).map((m) => [m.id, m])), [data]);
   if (isLoading || !data) return <p className="text-muted-foreground">Chargement…</p>;
@@ -47,6 +64,7 @@ function ListsPage() {
     if (r) {
       toast.success("Liste enregistrée.");
       setDraft({ ...draft, id: r.id });
+      setBaseline(snapshot(draft));
       refresh();
     }
   };
@@ -55,6 +73,7 @@ function ListsPage() {
     const r = await write("set_deleted", { p_table: "lists", p_id: draft.id, p_deleted: true });
     if (r) {
       toast.success("Liste mise à la corbeille.");
+      dirtyRef.current = false;
       setDraft(null);
       refresh();
     }
@@ -78,13 +97,13 @@ function ListsPage() {
       <aside className="panel h-fit p-4">
         <div className="flex items-center justify-between">
           <h2 className="card-title">Listes</h2>
-          <button className="btn btn-sm btn-primary" onClick={() => setDraft({ name: "Nouvelle liste", items: [] })}>+ Nouvelle</button>
+          <button className="btn btn-sm btn-primary" onClick={() => open({ name: "Nouvelle liste", items: [] })}>+ Nouvelle</button>
         </div>
         <ul className="mt-3 space-y-1">
           {lists.map((l) => (
             <li key={l.id}>
               <button
-                onClick={() => setDraft(structuredClone({ id: l.id, name: l.name, items: l.items }))}
+                onClick={() => l.id !== draft?.id && open(structuredClone({ id: l.id, name: l.name, items: l.items }))}
                 className={`w-full rounded-md px-2 py-1.5 text-left text-sm ${draft?.id === l.id ? "bg-accent text-accent-foreground" : "hover:bg-muted"}`}
               >
                 <div className="font-medium">{l.name}</div>
@@ -101,6 +120,7 @@ function ListsPage() {
           <section className="panel p-5">
             <div className="flex flex-wrap items-center gap-2">
               <input className="field max-w-sm font-medium" value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
+              {dirty && <span className="status status-dirty">Non enregistré</span>}
               <div className="ml-auto flex gap-2">
                 {draft.id && <button className="btn btn-danger" onClick={del}>Supprimer</button>}
                 <button className="btn btn-primary" onClick={save}>Enregistrer</button>
@@ -113,9 +133,20 @@ function ListsPage() {
                   {rows.map((r, i) => (
                     <tr key={i} className={r === heaviest && rows.length > 1 ? "bg-accent" : ""}>
                       <td>
-                        <select className="field" value={r.it.element_id} onChange={(e) => setDraft({ ...draft, items: draft.items.map((x, j) => (j === i ? { ...x, element_id: e.target.value } : x)) })}>
+                        <select
+                          className={`field ${!r.el || r.el.deleted_at ? "field-error" : ""}`}
+                          value={r.it.element_id}
+                          onChange={(e) => setDraft({ ...draft, items: draft.items.map((x, j) => (j === i ? { ...x, element_id: e.target.value } : x)) })}
+                        >
                           {elements.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}
+                          {/* Element a la corbeille ou disparu : on l'affiche tel quel au lieu
+                              de laisser le select montrer le nom d'un autre element */}
+                          {r.el?.deleted_at && <option value={r.el.id}>{r.el.name} (dans la corbeille)</option>}
+                          {!r.el && <option value={r.it.element_id}>Élément introuvable</option>}
                         </select>
+                        {r.el?.deleted_at && (
+                          <div className="mt-1 text-xs text-destructive">Élément dans la corbeille : restaurez-le ou retirez cette ligne.</div>
+                        )}
                       </td>
                       <td><NumInput digits={0} value={r.it.quantity} onChange={(v) => setDraft({ ...draft, items: draft.items.map((x, j) => (j === i ? { ...x, quantity: v ?? 0 } : x)) })} /></td>
                       <td className="num">{fmt(r.unit, 0)}</td>

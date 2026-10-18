@@ -75,6 +75,17 @@ export function fmt(n: number, digits = 2): string {
     .replace(/[\u202f\u00a0]/g, "'");
 }
 
+/**
+ * Texte affiche dans un champ de saisie : sans separateur de milliers, et sans
+ * zeros inutiles APRES la virgule. Les zeros de la partie entiere sont gardes
+ * (1000 reste "1000" — l'ancienne version affichait "1").
+ */
+export function inputText(v: number | null, digits = 2): string {
+  if (v == null || !isFinite(v)) return "";
+  const s = fmt(v, digits).replace(/['’]/g, "");
+  return s.includes(",") ? s.replace(/0+$/, "").replace(/,$/, "") : s;
+}
+
 export const PVB_LAYER_MM = 0.38;
 
 /**
