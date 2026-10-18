@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useData, useRefresh, fmtDate } from "@/lib/queries";
 import { write } from "@/lib/pin";
+import { checkBackup, type Backup } from "@/lib/backup";
 
 export const Route = createFileRoute("/corbeille")({
   head: () => ({
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/corbeille")({
 });
 
 const DAY = 86400000;
+
 
 function TrashPage() {
   const { data, isLoading } = useData();
@@ -51,7 +53,16 @@ function TrashPage() {
     } catch {
       toast.error("Fichier JSON illisible."); return;
     }
-    if (!confirm("Importer ce fichier ? Les entrées existantes portant le même identifiant seront remplacées.")) return;
+    // Verifications avant d'envoyer a la base, pour afficher un message clair
+    // au lieu d'une erreur SQL brute
+    const problem = checkBackup(p, data.raw);
+    if (problem) { toast.error(problem); return; }
+    const b = p as Backup;
+    const n = (k: keyof Backup) => (Array.isArray(b[k]) ? (b[k] as unknown[]).length : 0);
+    if (!confirm(
+      `Importer ce fichier ?\n${n("materials")} matériau(x), ${n("elements")} élément(s), ${n("lists")} liste(s).\n` +
+      "Les entrées existantes portant le même identifiant seront remplacées.",
+    )) return;
     const r = await write("import_all", { p });
     if (r) {
       toast.success(`Import terminé (${r.count} entrées).`);

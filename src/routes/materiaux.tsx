@@ -36,6 +36,17 @@ function MaterialsPage() {
 
   const save = async () => {
     if (!edit) return;
+    // Changer le mode (ex. kg/m³ -> kg/m²) d'un materiau deja utilise change le sens
+    // des saisies dans tous les elements concernes : on demande confirmation
+    const before = edit.id ? data.materials.find((m) => m.id === edit.id) : undefined;
+    if (before && before.mode !== edit.mode) {
+      const els = data.elements.filter((e) => !e.deleted_at && e.components.some((c) => c.material_id === before.id)).map((e) => e.name);
+      if (els.length && !confirm(
+        `Ce matériau est utilisé dans ${els.length} élément(s) : ${els.join(", ")}.\n` +
+        `Passer de « ${MODES[before.mode].label} » à « ${MODES[edit.mode].label} » va modifier leur poids et les champs à saisir.\n\n` +
+        `Astuce : dupliquez plutôt le matériau. Continuer quand même ?`,
+      )) return;
+    }
     const r = await write("save_material", { p: edit });
     if (r) {
       toast.success("Matériau enregistré.");

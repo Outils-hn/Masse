@@ -245,6 +245,7 @@ body {
   color: var(--muted-foreground);
 }
 @utility status-open { border-color: var(--primary); color: var(--primary); background: var(--accent); }
+@utility status-dirty { border-color: var(--destructive); color: var(--destructive); font-size: 0.7rem; }
 @utility tbl {
   width: 100%;
   font-size: 0.85rem;

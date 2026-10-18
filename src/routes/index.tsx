@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { createFileRoute, useBlocker } from "@tanstack/react-router";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useData, useRefresh, fmtDate, copyText, type ElementRow } from "@/lib/queries";
 import { write } from "@/lib/pin";
@@ -21,23 +21,46 @@ export const Route = createFileRoute("/")({
 const blank = (): ElementData => ({ name: "Nouvel élément", description: "", length_mm: 1000, height_mm: 2000, markup_pct: 5, components: [] });
 const SEG = ["var(--primary)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)", "var(--chart-1)", "var(--heading)", "var(--chart-5)"];
 
+/** Empreinte du contenu modifiable d'un element (ordre des champs fige) pour detecter les modifs. */
+function snapshot(d: ElementData | null): string {
+  if (!d) return "";
+  return JSON.stringify([
+    d.name, d.description, d.length_mm, d.height_mm, d.markup_pct,
+    d.components.map((c) => [c.material_id, c.label ?? "", c.thickness_mm, c.faces, c.length_m, c.count, c.custom_area_m2, c.glass_composition]),
+  ]);
+}
+
 function ElementsPage() {
   const { data, isLoading, error } = useData();
   const refresh = useRefresh();
   const [selId, setSelId] = useState<string | null>(null);
   const [draft, setDraft] = useState<ElementData | null>(null);
+  // Etat de reference (dernier etat enregistre / charge) pour savoir s'il y a des modifs en cours
+  const [baseline, setBaseline] = useState<string>("");
   const [q, setQ] = useState("");
 
   const elements = useMemo(() => (data?.elements ?? []).filter((e) => !e.deleted_at), [data]);
   const mats = useMemo(() => new Map((data?.materials ?? []).map((m) => [m.id, m])), [data]);
   const activeMats = (data?.materials ?? []).filter((m) => !m.deleted_at);
 
+  const dirty = draft !== null && snapshot(draft) !== baseline;
+  const dirtyRef = useRef(dirty);
+  dirtyRef.current = dirty;
+
+  // Bloque le changement d'onglet (et la fermeture de la page) s'il reste des modifs non enregistrees
+  useBlocker({
+    shouldBlockFn: () => dirtyRef.current && !confirm("Des modifications ne sont pas enregistrées. Les abandonner ?"),
+    enableBeforeUnload: () => dirtyRef.current,
+  });
+
   useEffect(() => {
     if (!data) return;
     if (selId === null && !draft && elements[0]) select(elements[0]);
     else if (selId) {
+      // Rechargement des donnees (ex. retour sur l'onglet) : on ne remplace le brouillon
+      // que s'il n'a pas de modifs en cours, sinon on ecraserait le travail de l'utilisateur
       const e = elements.find((x) => x.id === selId);
-      if (e) setDraft(structuredClone(e));
+      if (e && !dirtyRef.current) select(e);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
@@ -45,7 +68,9 @@ function ElementsPage() {
   function select(e: ElementRow) {
     setSelId(e.id);
     setDraft(structuredClone(e));
+    setBaseline(snapshot(e));
   }
+  const confirmLeave = () => !dirtyRef.current || confirm("Des modifications ne sont pas enregistrées. Les abandonner ?");
 
   if (isLoading) return <p className="text-muted-foreground">Chargement…</p>;
   if (error) return <p className="text-destructive">Impossible de charger les données.</p>;
@@ -55,23 +80,37 @@ function ElementsPage() {
     const r = await write("save_element", { p: draft });
     if (r) {
       toast.success("Élément enregistré.");
+      setBaseline(snapshot(draft));
+      dirtyRef.current = false;
       setSelId(r.id);
       await refresh();
     }
   };
   const duplicate = async (e: ElementData) => {
+    if (dirtyRef.current && !confirm("La copie reprendra vos modifications, mais l'élément d'origine ne sera pas enregistré. Continuer ?")) return;
     const r = await write("save_element", { p: { ...e, id: null, name: e.name + " (copie)" } });
     if (r) {
       toast.success("Élément dupliqué.");
+      // On vide le brouillon : le rechargement ouvrira la copie
+      setDraft(null);
+      setBaseline("");
+      dirtyRef.current = false;
       setSelId(r.id);
       await refresh();
     }
   };
   const remove = async () => {
-    if (!selId || !confirm("Mettre cet élément à la corbeille ?")) return;
+    if (!selId) return;
+    // Prevenir si l'element sert dans des listes : leur poids total en depend
+    const usedIn = (data?.lists ?? []).filter((l) => !l.deleted_at && l.items.some((it) => it.element_id === selId)).map((l) => l.name);
+    const msg = usedIn.length
+      ? `Cet élément est utilisé dans ${usedIn.length > 1 ? "les listes" : "la liste"} : ${usedIn.join(", ")}.\nIl y restera signalé « dans la corbeille ».\n\nMettre cet élément à la corbeille ?`
+      : "Mettre cet élément à la corbeille ?";
+    if (!confirm(msg)) return;
     const r = await write("set_deleted", { p_table: "elements", p_id: selId, p_deleted: true });
     if (r) {
       toast.success("Élément mis à la corbeille.");
+      dirtyRef.current = false;
       setSelId(null);
       setDraft(null);
       await refresh();
@@ -85,14 +124,23 @@ function ElementsPage() {
       <aside className="panel h-fit p-4">
         <div className="flex items-center justify-between">
           <h2 className="card-title">Éléments</h2>
-          <button className="btn btn-sm btn-primary" onClick={() => { setSelId(null); setDraft(blank()); }}>+ Nouveau</button>
+          <button
+            className="btn btn-sm btn-primary"
+            onClick={() => {
+              if (!confirmLeave()) return;
+              // Nouvel element : baseline vide => il compte comme "non enregistre" tant qu'il n'est pas sauve
+              setSelId(null);
+              setDraft(blank());
+              setBaseline("");
+            }}
+          >+ Nouveau</button>
         </div>
         <input className="field mt-3" placeholder="Rechercher…" value={q} onChange={(e) => setQ(e.target.value)} />
         <ul className="mt-3 space-y-1">
           {filtered.map((e) => (
             <li key={e.id}>
               <button
-                onClick={() => select(e)}
+                onClick={() => e.id !== selId && confirmLeave() && select(e)}
                 className={`w-full rounded-md px-2 py-1.5 text-left text-sm ${e.id === selId ? "bg-accent text-accent-foreground" : "hover:bg-muted"}`}
               >
                 <div className="font-medium">{e.name}</div>
@@ -114,6 +162,7 @@ function ElementsPage() {
           onDuplicate={() => duplicate(draft)}
           onDelete={selId ? remove : undefined}
           updatedAt={elements.find((e) => e.id === selId)?.updated_at}
+          dirty={dirty}
         />
       ) : (
         <div className="panel p-8 text-center text-muted-foreground">Créez un élément pour commencer.</div>
@@ -123,7 +172,7 @@ function ElementsPage() {
 }
 
 function Editor({
-  draft, setDraft, mats, activeMats, onSave, onDuplicate, onDelete, updatedAt,
+  draft, setDraft, mats, activeMats, onSave, onDuplicate, onDelete, updatedAt, dirty,
 }: {
   draft: ElementData;
   setDraft: (d: ElementData) => void;
@@ -133,6 +182,7 @@ function Editor({
   onDuplicate: () => void;
   onDelete: (() => void) | undefined;
   updatedAt: string | undefined;
+  dirty: boolean;
 }) {
   const set = (p: Partial<ElementData>) => setDraft({ ...draft, ...p });
   const setComp = (i: number, p: Partial<Component>) => set({ components: draft.components.map((c, j) => (j === i ? { ...c, ...p } : c)) });
@@ -171,7 +221,10 @@ function Editor({
     <div className="space-y-6">
       <section className="panel p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="card-title">Élément</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="card-title">Élément</h2>
+            {dirty && <span className="status status-dirty">Non enregistré</span>}
+          </div>
           <div className="flex flex-wrap gap-2">
             <button className="btn" onClick={onDuplicate}>Dupliquer</button>
             {onDelete && <button className="btn btn-danger" onClick={onDelete}>Supprimer</button>}

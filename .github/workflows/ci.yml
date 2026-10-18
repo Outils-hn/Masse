@@ -1,0 +1,28 @@
+# Verification automatique : a chaque envoi de code, GitHub lance les tests,
+# le controle TypeScript et la construction de l'appli. Une croix rouge dans
+# GitHub = quelque chose est casse, a ne pas fusionner.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verifier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # bun.lock pointe en partie vers le cache prive de Lovable : on installe
+      # depuis le registre npm public, sans utiliser ce fichier.
+      - name: Installer les dependances
+        run: npm install --no-package-lock --no-audit --no-fund
+      - name: Tests
+        run: npx vitest run
+      - name: Controle TypeScript
+        run: npx tsc --noEmit
+      - name: Construction
+        run: npx vite build

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { parseNum, fmt } from "@/lib/calc";
+import { parseNum, inputText } from "@/lib/calc";
 
 /** Number field accepting comma, point and Swiss apostrophe. Commits on blur. */
 export function NumInput({
@@ -17,7 +17,7 @@ export function NumInput({
   className?: string;
   placeholder?: string;
 }) {
-  const show = (v: number | null) => (v == null ? "" : fmt(v, digits).replace(/'/g, "").replace(/,?0+$/, "").replace(/,$/, ""));
+  const show = (v: number | null) => inputText(v, digits);
   const [text, setText] = useState(show(value));
   const [focus, setFocus] = useState(false);
   useEffect(() => {
