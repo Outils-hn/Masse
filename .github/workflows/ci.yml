@@ -37,6 +37,11 @@ jobs:
           name: pdf-test
           path: test-output/
           if-no-files-found: ignore
+      - name: Apercu texte des PDF (temporaire)
+        if: always()
+        run: |
+          sudo apt-get install -y -qq poppler-utils >/dev/null 2>&1 || true
+          for f in test-output/*.pdf; do pdftotext -layout -l 1 "$f" - | head -n 45 | sed 's/^/| /' | while IFS= read -r l; do echo "::notice::$l"; done; done
       - name: Controle TypeScript
         run: |
           set -o pipefail
