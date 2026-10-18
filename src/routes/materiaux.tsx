@@ -4,8 +4,7 @@ import { toast } from "sonner";
 import { useData, useRefresh, fmtDate } from "@/lib/queries";
 import { write } from "@/lib/pin";
 import { NumInput } from "@/components/NumInput";
-import { CATEGORIES, MODES, fmt, type Material, type Mode } from "@/lib/calc";
-import { isUnverified } from "@/components/Fiche";
+import { CATEGORIES, MODES, fmt, isUnverified, type Material, type Mode } from "@/lib/calc";
 
 export const Route = createFileRoute("/materiaux")({
   head: () => ({

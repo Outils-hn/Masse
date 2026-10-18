@@ -4,8 +4,8 @@ import { toast } from "sonner";
 import { useData, useRefresh, copyText, fmtDate } from "@/lib/queries";
 import { write } from "@/lib/pin";
 import { NumInput } from "@/components/NumInput";
-import { ListFiche, isUnverified, printWithTitle, type ListFicheRow } from "@/components/Fiche";
-import { elementResult, fmt } from "@/lib/calc";
+import { exportListPdf, type ListPdfRow } from "@/lib/fiche-pdf";
+import { elementResult, fmt, isUnverified } from "@/lib/calc";
 
 export const Route = createFileRoute("/listes")({
   head: () => ({
@@ -80,7 +80,7 @@ function ListsPage() {
     }
   };
   // Lignes de la fiche PDF : on signale les elements a la corbeille et les materiaux non verifies
-  const ficheRows: ListFicheRow[] = rows.map((r) => ({
+  const ficheRows: ListPdfRow[] = rows.map((r) => ({
     name: r.el?.name ?? "Élément introuvable",
     quantity: r.it.quantity,
     unit: r.unit,
@@ -93,7 +93,7 @@ function ListsPage() {
       toast.error("Enregistrez la liste avant d'éditer sa fiche.");
       return;
     }
-    printWithTitle(`Poids livraison - ${draft.name}`);
+    exportListPdf(draft.name, ficheRows).catch(() => toast.error("Le PDF n'a pas pu être créé. Réessayez."));
   };
 
   const copy = async () => {
@@ -135,7 +135,6 @@ function ListsPage() {
 
       {draft ? (
         <div className="space-y-6">
-          {draft.id && <ListFiche name={draft.name} rows={ficheRows} />}
           <section className="panel p-5">
             <div className="flex flex-wrap items-center gap-2">
               <input className="field max-w-sm font-medium" value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
@@ -187,7 +186,7 @@ function ListsPage() {
               <h2 className="card-title">Résultats de la liste</h2>
               <div className="flex gap-2">
                 <button className="btn btn-sm" onClick={copy}>Copier le détail</button>
-                <button className="btn btn-sm btn-primary" onClick={printFiche} title="Ouvre l'impression : choisissez « Enregistrer au format PDF »">Fiche PDF</button>
+                <button className="btn btn-sm btn-primary" onClick={printFiche} title="Télécharge la fiche en PDF">Fiche PDF</button>
               </div>
             </div>
             <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">

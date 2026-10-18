@@ -111,6 +111,9 @@ export function glassThickness(comp: string): number {
   return Math.round(total * 1000) / 1000;
 }
 
+/** Un materiau est "non verifie" tant que sa source contient la mention d'origine. */
+export const isUnverified = (m?: Material) => !!m && /à vérifier/i.test(m.source);
+
 export function baseArea(el: { length_mm: number; height_mm: number }) {
   return (el.length_mm * el.height_mm) / 1e6;
 }
