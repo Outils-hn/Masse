@@ -5,7 +5,7 @@ import { useData, useRefresh, fmtDate, copyText, type ElementRow } from "@/lib/q
 import { write } from "@/lib/pin";
 import { NumInput } from "@/components/NumInput";
 import { ElementFiche, printWithTitle } from "@/components/Fiche";
-import { MODES, elementResult, fmt, glassThickness, type Component, type ElementData, type Material } from "@/lib/calc";
+import { CATEGORIES, MODES, elementResult, fmt, glassThickness, type Component, type ElementData, type Material } from "@/lib/calc";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -78,6 +78,10 @@ function ElementsPage() {
 
   const save = async () => {
     if (!draft) return;
+    if (draft.components.some((c) => !c.material_id)) {
+      toast.error("Choisissez un matériau pour chaque composant (ou retirez la ligne vide).");
+      return;
+    }
     const r = await write("save_element", { p: draft });
     if (r) {
       toast.success("Élément enregistré.");
@@ -88,6 +92,10 @@ function ElementsPage() {
     }
   };
   const duplicate = async (e: ElementData) => {
+    if (e.components.some((c) => !c.material_id)) {
+      toast.error("Choisissez un matériau pour chaque composant avant de dupliquer.");
+      return;
+    }
     if (dirtyRef.current && !confirm("La copie reprendra vos modifications, mais l'élément d'origine ne sera pas enregistré. Continuer ?")) return;
     const r = await write("save_element", { p: { ...e, id: null, name: e.name + " (copie)" } });
     if (r) {
@@ -167,7 +175,12 @@ function ElementsPage() {
           saved={selId !== null}
         />
       ) : (
-        <div className="panel p-8 text-center text-muted-foreground">Créez un élément pour commencer.</div>
+        <div className="panel flex flex-col items-center gap-3 p-10 text-center text-muted-foreground">
+          <p>Aucun élément ouvert.</p>
+          <button className="btn btn-primary" onClick={() => { setSelId(null); setDraft(blank()); setBaseline(""); }}>
+            {elements.length ? "Créer un élément" : "Créer mon premier élément"}
+          </button>
+        </div>
       )}
     </div>
   );
@@ -196,11 +209,25 @@ function Editor({
     [arr[i], arr[j]] = [arr[j]!, arr[i]!];
     set({ components: arr });
   };
+  // Nouveau composant SANS materiau preselectionne : avant, le 1er de la liste (Acier, 2 mm)
+  // etait compte d'office, avec le risque de garder un poids d'acier non voulu
   const addComp = () => {
-    const m = activeMats[0];
-    if (!m) { toast.error("Ajoutez d'abord un matériau à la bibliothèque."); return; }
-    set({ components: [...draft.components, { material_id: m.id, thickness_mm: 2, faces: 1, length_m: 1, count: 1, custom_area_m2: null, glass_composition: "" }] });
+    if (!activeMats.length) { toast.error("Ajoutez d'abord un matériau à la bibliothèque."); return; }
+    set({ components: [...draft.components, { material_id: "", thickness_mm: 0, faces: 1, length_m: 1, count: 1, custom_area_m2: null, glass_composition: "" }] });
   };
+  // Premier choix de materiau : epaisseur de depart plausible selon la categorie
+  const pickMaterial = (i: number, id: string) => {
+    const c = draft.components[i]!;
+    const mat = mats.get(id);
+    const first = c.material_id === "";
+    const thick = mat?.category === "isolant" ? 100 : mat?.category === "metal" ? 2 : mat?.category === "verre" ? 8 : 1;
+    setComp(i, { material_id: id, ...(first ? { thickness_mm: thick } : {}) });
+  };
+  // Materiaux actifs ranges par categorie, pour une liste plus lisible
+  const groups = Object.entries(CATEGORIES)
+    .map(([k, label]) => ({ label, items: activeMats.filter((x) => x.category === k) }))
+    .filter((g) => g.items.length);
+  const others = activeMats.filter((x) => !(x.category in CATEGORIES));
   const res = elementResult(draft, mats);
 
   const copy = async () => {
@@ -279,8 +306,20 @@ function Editor({
               <div key={i} className="rounded-md border p-3">
                 <div className="flex flex-wrap items-end gap-3">
                   <label className="min-w-[200px] flex-1 text-xs text-muted-foreground">Matériau
-                    <select className="field mt-1 text-foreground" value={c.material_id} onChange={(e) => setComp(i, { material_id: e.target.value })}>
-                      {activeMats.map((x) => (
+                    <select
+                      className={`field mt-1 text-foreground ${c.material_id === "" ? "field-error" : ""}`}
+                      value={c.material_id}
+                      onChange={(e) => pickMaterial(i, e.target.value)}
+                    >
+                      <option value="" disabled>— Choisir un matériau —</option>
+                      {groups.map((g) => (
+                        <optgroup key={g.label} label={g.label}>
+                          {g.items.map((x) => (
+                            <option key={x.id} value={x.id}>{x.name} — {fmt(x.value, x.mode === "density" ? 0 : 2)} {MODES[x.mode].unit}</option>
+                          ))}
+                        </optgroup>
+                      ))}
+                      {others.map((x) => (
                         <option key={x.id} value={x.id}>{x.name} — {fmt(x.value, x.mode === "density" ? 0 : 2)} {MODES[x.mode].unit}</option>
                       ))}
                       {m?.deleted_at && <option value={m.id}>{m.name} (supprimé)</option>}
@@ -375,7 +414,7 @@ function Editor({
               {res.lines.map((l, i) => (
                 <tr key={i}>
                   <td><span className="inline-block h-3 w-3 rounded-sm" style={{ background: SEG[i % SEG.length] }} /></td>
-                  <td>{l.m?.name}</td>
+                  <td>{l.m?.name ?? <span className="text-muted-foreground">— à choisir —</span>}</td>
                   <td className="num">{fmt(l.kg)}</td>
                   <td className="num">{fmt(res.subtotal ? (l.kg / res.subtotal) * 100 : 0, 1)} %</td>
                 </tr>
