@@ -1,0 +1,37 @@
+# Audit utilisateur (branche audit/** uniquement, jamais fusionnee) : parcours reel dans
+# un navigateur avec Supabase simule ; resultats publies sur la branche « captures/<branche> ».
+name: Audit
+
+on:
+  push:
+    branches: ["audit/**"]
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-package-lock --no-audit --no-fund --legacy-peer-deps
+      - run: npm install --no-save --no-package-lock --legacy-peer-deps playwright@1.48.2 @axe-core/playwright@4.10.1 && npx playwright install --with-deps chromium && sudo apt-get install -y poppler-utils
+      - name: Parcours utilisateur
+        run: |
+          mkdir -p out/audit
+          (npx vite dev --port 8080 --host 127.0.0.1 > dev.log 2>&1 &)
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:8080/ >/dev/null && break; sleep 2; done
+          node e2e/audit.mjs out || true
+          for f in out/audit/*.pdf; do if [ -f "$f" ]; then pdftoppm -png -r 60 -l 2 "$f" "${f%.pdf}-page"; fi; done
+          tail -30 dev.log > out/audit/dev-log.txt
+      - name: Publier sur la branche captures
+        run: |
+          cd out
+          git init -q -b "captures/${GITHUB_REF_NAME}"
+          git config user.name "github-actions"; git config user.email "github-actions@users.noreply.github.com"
+          git add -A && git commit -qm "Audit de ${GITHUB_REF_NAME} (${GITHUB_SHA::7})"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:refs/heads/captures/${GITHUB_REF_NAME}"
