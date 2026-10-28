@@ -1,0 +1,59 @@
+Chargement initial (ms) : 3370
+Titre de l'onglet : Éléments — Masse
+Texte au premier ecran (vide) : ÉLÉMENTS + Nouveau Aucun élément. Aucun élément ouvert. Créer mon premier élément
+Ajouter un composant sans materiau : Ajoutez d'abord un matériau à la bibliothèque.
+axe Elements : ["empty-table-header (minor, 1)","page-has-heading-one (moderate, 1)"]
+Resultat apres saisie : RÉSULTATS Copier le détail Fiche PDF Poids total 158kg Poids au m² 45,0kg/m² Composant Poids (kg) Part Aluminium 28,35 18,9 % Laine de roche 16,80 11,2 % Verre 105,00 69,9 % Sous-total sans majoration 150,15 Major
+PIN demande a l'enregistrement : true
+PIN faux : PIN incorrect (4 essai(s) restant(s)).
+Apres bon PIN : Élément enregistré. | PIN incorrect (4 essai(s) restant(s)).
+Clics pour creer et enregistrer l'element (hors saisie) : 5
+Appels RPC : verify_pin, verify_pin, save_element
+PDF : Fiche poids - Cassette test.pdf
+Tabulations jusqu'a Enregistrer : 15
+Absurde « largeur negative » : RÉSULTATS Copier le détail Fiche PDF Poids total -137kg Poids au m² —kg/m² Composant Poids (kg) Part Aluminium -24,30 18,5 % Acier -47,10 35,8 % Verre -60,00 45,7 % Sous-total sans majoration -131,40 Majoration 5,
+Absurde « largeur negative » : enregistrement : accepte (PIN demande)
+Absurde « hauteur 0 » : RÉSULTATS Copier le détail Fiche PDF Poids total 0kg Poids au m² —kg/m² Composant Poids (kg) Part Aluminium 0,00 0,0 % Acier 0,00 0,0 % Verre 0,00 0,0 % Sous-total sans majoration 0,00 Majoration 5,0 % 0,00 Esti
+Absurde « hauteur 0 » : enregistrement : accepte (PIN demande)
+Absurde « epaisseur negative » : RÉSULTATS Copier le détail Fiche PDF Poids total 105kg Poids au m² 29,0kg/m² Composant Poids (kg) Part Aluminium -29,16 -29,3 % Acier 56,52 56,9 % Verre 72,00 72,5 % Sous-total sans majoration 99,36 Majoration 5,0
+Absurde « epaisseur negative » : enregistrement : accepte (PIN demande)
+Absurde « majoration 500 % » : RÉSULTATS Copier le détail Fiche PDF Poids total 947kg Poids au m² 262,8kg/m² Composant Poids (kg) Part Aluminium 29,16 18,5 % Acier 56,52 35,8 % Verre 72,00 45,7 % Sous-total sans majoration 157,68 Majoration 500
+Absurde « majoration 500 % » : enregistrement : accepte (PIN demande)
+Absurde « faces 2,5 » : RÉSULTATS Copier le détail Fiche PDF Poids total 212kg Poids au m² 58,7kg/m² Composant Poids (kg) Part Aluminium 72,90 36,2 % Acier 56,52 28,1 % Verre 72,00 35,7 % Sous-total sans majoration 201,42 Majoration 5,0 
+Absurde « faces 2,5 » : enregistrement : accepte (PIN demande)
+Absurde « surface perso negative » : RÉSULTATS Copier le détail Fiche PDF Poids total 118kg Poids au m² 32,8kg/m² Composant Poids (kg) Part Aluminium -16,20 -14,4 % Acier 56,52 50,3 % Verre 72,00 64,1 % Sous-total sans majoration 112,32 Majoration 5,
+Absurde « surface perso negative » : enregistrement : accepte (PIN demande)
+Absurde « verre « abc » » : RÉSULTATS Copier le détail Fiche PDF Poids total 242kg Poids au m² 67,0kg/m² Composant Poids (kg) Part Aluminium 29,16 12,7 % Acier 56,52 24,6 % Verre 72,00 31,3 % Verre 72,00 31,3 % Sous-total sans majoration 229,
+Absurde « verre « abc » » : enregistrement : accepte (PIN demande)
+Absurde « largeur texte « douze » » : RÉSULTATS Copier le détail Fiche PDF Poids total 166kg Poids au m² 46,0kg/m² Composant Poids (kg) Part Aluminium 29,16 18,5 % Acier 56,52 35,8 % Verre 72,00 45,7 % Sous-total sans majoration 157,68 Majoration 5,0 
+Absurde « largeur texte « douze » » : enregistrement : accepte (PIN demande)
+Badge non enregistre : true
+dialogue natif du navigateur : confirm « Des modifications ne sont pas enregistrées. Les abandonner ? »
+Apres clic sur Materiaux avec modifs : http://127.0.0.1:8080/materiaux
+Chargement 300 elements / 207 materiaux (ms) : 2834
+Element a 50 composants : latence par frappe (ms) : [1183,1039]
+Recherche « Élément 29 » : 11 resultat(s)
+Hauteur page gros volume (px) : 8469
+axe materiaux : ["empty-table-header (minor, 1)","page-has-heading-one (moderate, 1)","select-name (critical, 1)"]
+Texte materiaux : BIBLIOTHÈQUE DE MATÉRIAUX Toutes catégories Métal Verre Isolant Panneau Profilé Joint / accessoire Autre + Matériau Nom Catégorie Mode Valeur Source Modifié Aluminium Métal Densité 2'700 kg/m³ test 28.10.26 10:00 Modifier Dupliquer Supprimer Acier M
+axe listes : ["page-has-heading-one (moderate, 1)"]
+Texte listes : LISTES + Nouvelle Livraison 1 28.10.26 10:00 Sélectionnez ou créez une liste.
+axe corbeille : ["empty-table-header (minor, 1)","page-has-heading-one (moderate, 1)"]
+Texte corbeille : CORBEILLE (30 JOURS) Type Nom Supprimé le La corbeille est vide. SAUVEGARDE Exportez toute la bibliothèque, les éléments et les listes dans un fichier JSON. L'import demande le PIN. Exporter (JSON) Importer (JSON)
+console : Failed to load resource: net::ERR_FAILED
+console : Failed to load resource: net::ERR_FAILED
+console : Failed to load resource: net::ERR_FAILED
+console : Failed to load resource: net::ERR_FAILED
+console : Failed to load resource: net::ERR_FAILED
+console : Failed to load resource: net::ERR_FAILED
+console : Failed to load resource: net::ERR_FAILED
+console : Failed to load resource: net::ERR_FAILED
+console : Failed to load resource: net::ERR_FAILED
+console : Failed to load resource: net::ERR_FAILED
+console : Failed to load resource: net::ERR_FAILED
+console : Failed to load resource: net::ERR_FAILED
+console : Failed to load resource: net::ERR_FAILED
+console : Failed to load resource: net::ERR_FAILED
+console : Failed to load resource: net::ERR_FAILED
+Supabase injoignable : Chargement…
+Mobile : debordement horizontal (px) : 0
