@@ -7,13 +7,14 @@ import { installerPolicesPDF } from "./pdf-fonts";
 // Les librairies sont chargees a la demande pour ne pas alourdir l'ouverture de l'appli.
 
 type RGB = [number, number, number];
-const INK: RGB = [30, 41, 59];
-const MUTED: RGB = [100, 116, 139];
-const LINE: RGB = [226, 232, 240];
+// Encre et gris du style Epure (memes teintes que les fiches de Linear et Format)
+const INK: RGB = [31, 33, 38];
+const MUTED: RGB = [112, 115, 124];
+const LINE: RGB = [229, 229, 226];
 const BRICK: RGB = [154, 74, 58];
 const RED: RGB = [180, 35, 24];
-const SOFT: RGB = [248, 245, 243];
-const SEG: RGB[] = [[154, 74, 58], [63, 107, 92], [192, 138, 62], [91, 107, 140], [140, 91, 122], [30, 41, 59], [122, 140, 91]];
+const SOFT: RGB = [250, 250, 248];
+const SEG: RGB[] = [[154, 74, 58], [63, 107, 92], [192, 138, 62], [91, 107, 140], [140, 91, 122], [60, 62, 68], [122, 140, 91]];
 
 const M = 14; // marge (mm)
 
@@ -33,11 +34,13 @@ const W = (doc: jsPDF) => doc.internal.pageSize.getWidth();
 
 function header(doc: jsPDF, kind: string, title: string, description?: string) {
   const w = W(doc);
-  doc.setFont("PlexSans", "bold").setFontSize(16).setTextColor(...INK).text("Masse", M, M + 4);
-  doc.setTextColor(...BRICK).text(".", M + doc.getTextWidth("Masse"), M + 4);
-  doc.setFont("PlexSans", "normal").setFontSize(8).setTextColor(...MUTED)
-    .text(`${kind.toUpperCase()} · ${today()}`, w - M, M + 4, { align: "right" });
-  doc.setDrawColor(...BRICK).setLineWidth(0.6).line(M, M + 7, w - M, M + 7);
+  // Logo (bloc sur son assise brique) + nom de l'appli, comme l'en-tete de l'ecran
+  doc.setDrawColor(...INK).setLineWidth(0.35).rect(M + 0.4, M - 0.6, 5.2, 4.6);
+  doc.setFillColor(...BRICK).rect(M, M + 2.6, 6, 1.5, "F");
+  doc.setFont("PlexSans", "bold").setFontSize(13).setTextColor(...INK).text("Masse", M + 8.5, M + 4);
+  doc.setFont("PlexSans", "normal").setFontSize(7).setTextColor(...MUTED)
+    .text(`${kind.toUpperCase()} · ${today()}`, w - M, M + 4, { align: "right", charSpace: 0.3 });
+  doc.setDrawColor(...INK).setLineWidth(0.4).line(M, M + 7, w - M, M + 7);
   doc.setFont("PlexSans", "bold").setFontSize(17).setTextColor(...INK).text(title, M, M + 18);
   let y = M + 18;
   if (description) {
@@ -98,7 +101,8 @@ function closing(doc: jsPDF, y: number, unverified: string[]) {
   for (let p = 1; p <= pages; p++) {
     doc.setPage(p);
     doc.setDrawColor(...LINE).setLineWidth(0.2).line(M, h - M - 4, w - M, h - M - 4);
-    doc.setFontSize(7.5).setTextColor(148, 163, 184).text(`Établi par H. N. · Masse · ${today()}`, M, h - M);
+    // Pas de nom d'auteur sur les documents remis : seulement l'appli et la date
+    doc.setFontSize(7.5).setTextColor(150, 152, 158).text(`Masse · ${today()}`, M, h - M);
     if (pages > 1) doc.text(`${p} / ${pages}`, w - M, h - M, { align: "right" });
   }
 }
@@ -115,7 +119,7 @@ function drawTotalLine(doc: jsPDF, at: { page: number; y: number } | null) {
 const tableStyles = {
   styles: { font: "PlexSans", fontSize: 9, textColor: INK, cellPadding: { top: 2, bottom: 2, left: 1.5, right: 1.5 }, lineColor: LINE, lineWidth: 0 },
   headStyles: { font: "PlexSans", fontStyle: "normal" as const, fontSize: 7, textColor: MUTED, fillColor: [255, 255, 255] as RGB },
-  footStyles: { font: "PlexSans", fontStyle: "normal" as const, textColor: [71, 85, 105] as RGB, fillColor: [255, 255, 255] as RGB },
+  footStyles: { font: "PlexSans", fontStyle: "normal" as const, textColor: [80, 83, 90] as RGB, fillColor: [255, 255, 255] as RGB },
   alternateRowStyles: { fillColor: [250, 250, 251] as RGB },
 };
 
@@ -173,7 +177,7 @@ export async function exportElementPdf(el: ElementData, mats: Map<string, Materi
     columnStyles: {
       0: { cellWidth: 6 },
       1: { cellWidth: 46 },
-      2: { fontSize: 7.5, textColor: [71, 85, 105] },
+      2: { fontSize: 7.5, textColor: [80, 83, 90] },
       3: { cellWidth: 24, halign: "right" },
       4: { cellWidth: 18, halign: "right" },
     },

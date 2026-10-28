@@ -1,14 +1,16 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { parseNum, inputText } from "@/lib/calc";
 
 /** Number field accepting comma, point and Swiss apostrophe. Commits on blur. */
-export function NumInput({
+export const NumInput = memo(function NumInput({
   value,
   onChange,
   digits = 2,
   allowEmpty,
   className = "",
   placeholder,
+  invalid,
+  describedBy,
 }: {
   value: number | null;
   onChange: (v: number | null) => void;
@@ -16,6 +18,9 @@ export function NumInput({
   allowEmpty?: boolean;
   className?: string;
   placeholder?: string;
+  /** Valeur lisible mais hors limites (ex. epaisseur negative) : bordure rouge. */
+  invalid?: boolean;
+  describedBy?: string;
 }) {
   const show = (v: number | null) => inputText(v, digits);
   const [text, setText] = useState(show(value));
@@ -26,7 +31,9 @@ export function NumInput({
   const bad = text.trim() !== "" && isNaN(parseNum(text));
   return (
     <input
-      className={`field num ${bad ? "field-error" : ""} ${className}`}
+      className={`field num ${bad || invalid ? "field-error" : ""} ${className}`}
+      aria-invalid={bad || invalid || undefined}
+      aria-describedby={describedBy}
       value={text}
       placeholder={placeholder}
       inputMode="decimal"
@@ -40,4 +47,4 @@ export function NumInput({
       onBlur={() => setFocus(false)}
     />
   );
-}
+});

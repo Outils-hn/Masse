@@ -3,6 +3,8 @@ import { toast } from "sonner";
 import { useData, useRefresh, fmtDate } from "@/lib/queries";
 import { write } from "@/lib/pin";
 import { checkBackup, type Backup } from "@/lib/backup";
+import { Etat } from "@/components/masse/Etat";
+import { ask } from "@/lib/confirm";
 
 export const Route = createFileRoute("/corbeille")({
   head: () => ({
@@ -20,9 +22,9 @@ const DAY = 86400000;
 
 
 function TrashPage() {
-  const { data, isLoading } = useData();
+  const { data, isLoading, error } = useData();
   const refresh = useRefresh();
-  if (isLoading || !data) return <p className="text-muted-foreground">Chargement…</p>;
+  if (isLoading || error || !data) return <Etat isLoading={isLoading} error={error} />;
 
   const recent = (d: string | null) => d && Date.now() - new Date(d).getTime() < 30 * DAY;
   const items = [
@@ -59,10 +61,11 @@ function TrashPage() {
     if (problem) { toast.error(problem); return; }
     const b = p as Backup;
     const n = (k: keyof Backup) => (Array.isArray(b[k]) ? (b[k] as unknown[]).length : 0);
-    if (!confirm(
-      `Importer ce fichier ?\n${n("materials")} matériau(x), ${n("elements")} élément(s), ${n("lists")} liste(s).\n` +
-      "Les entrées existantes portant le même identifiant seront remplacées.",
-    )) return;
+    if (!(await ask({
+      title: "Importer ce fichier ?",
+      message: `${n("materials")} matériau(x), ${n("elements")} élément(s), ${n("lists")} liste(s).\nLes entrées existantes portant le même identifiant seront remplacées.`,
+      confirm: "Importer",
+    }))) return;
     const r = await write("import_all", { p });
     if (r) {
       toast.success(`Import terminé (${r.count} entrées).`);
@@ -75,13 +78,13 @@ function TrashPage() {
       <section className="panel p-5">
         <h2 className="card-title">Corbeille (30 jours)</h2>
         <table className="tbl mt-3">
-          <thead><tr><th>Type</th><th>Nom</th><th>Supprimé le</th><th></th></tr></thead>
+          <thead><tr><th>Type</th><th>Nom</th><th>Supprimé le</th><th><span className="sr-only">Actions</span></th></tr></thead>
           <tbody>
             {items.map((i) => (
               <tr key={i.id}>
                 <td>{i.kind}</td>
                 <td>{i.name}</td>
-                <td className="font-mono text-xs">{fmtDate(i.at)}</td>
+                <td className="num text-left text-xs">{fmtDate(i.at)}</td>
                 <td className="text-right"><button className="btn btn-sm" onClick={() => restore(i.table, i.id)}>Restaurer</button></td>
               </tr>
             ))}
@@ -89,7 +92,7 @@ function TrashPage() {
           </tbody>
         </table>
       </section>
-      <section className="panel p-5">
+      <section id="sauvegarde" className="panel scroll-mt-6 p-5">
         <h2 className="card-title">Sauvegarde</h2>
         <p className="mt-2 text-sm text-muted-foreground">Exportez toute la bibliothèque, les éléments et les listes dans un fichier JSON. L'import demande le PIN.</p>
         <div className="mt-4 flex flex-wrap gap-2">

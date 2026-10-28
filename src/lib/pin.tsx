@@ -36,6 +36,9 @@ function askPin(): Promise<string | null> {
 
 export const db = supabase as any;
 
+const OFFLINE_MSG = "Base injoignable : vérifiez la connexion, rien n'a été enregistré.";
+const isNetwork = (e: { message?: string } | null | undefined) => /fetch|network|Load failed/i.test(e?.message ?? "");
+
 /** Calls a PIN-protected RPC. Returns the result object or null when cancelled / failed. */
 export async function write(fn: string, args: Record<string, unknown>): Promise<any | null> {
   loadPin();
@@ -46,12 +49,12 @@ export async function write(fn: string, args: Record<string, unknown>): Promise<
   }
   const { data, error } = await db.rpc(fn, { p_pin: p, ...args });
   if (error) {
-    toast.error("Erreur : " + error.message);
+    toast.error(isNetwork(error) ? OFFLINE_MSG : "Erreur : " + error.message);
     return null;
   }
   if (!data?.ok) {
     if (/PIN|essais|Aucun PIN/.test(data?.error ?? "")) setPin(null);
-    toast.error(data?.error ?? "Échec de la modification.");
+    toast.error(data?.error ?? "Échec de la modification.", { id: "pin" });
     return null;
   }
   setPin(p);
@@ -77,20 +80,22 @@ export function PinDialog() {
   if (!open) return null;
   const submit = async () => {
     setBusy(true);
-    const { data } = await db.rpc("verify_pin", { p_pin: value });
+    const { data, error } = await db.rpc("verify_pin", { p_pin: value });
     setBusy(false);
-    if (data?.ok) close(value);
-    else toast.error(data?.error ?? "PIN incorrect.");
+    // Meme identifiant de notification : un bon PIN efface le « PIN incorrect » precedent
+    if (data?.ok) { toast.dismiss("pin"); close(value); }
+    else toast.error(error && isNetwork(error) ? OFFLINE_MSG : (data?.error ?? "PIN incorrect."), { id: "pin" });
   };
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 p-4" onClick={() => close(null)}>
-      <div className="panel w-full max-w-sm p-5" onClick={(e) => e.stopPropagation()}>
-        <h2 className="card-title">Code PIN requis</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => close(null)} onKeyDown={(e) => e.key === "Escape" && close(null)}>
+      <div className="panel w-full max-w-sm p-5 shadow-lg" role="dialog" aria-modal="true" aria-labelledby="pin-titre" onClick={(e) => e.stopPropagation()}>
+        <h2 id="pin-titre" className="text-base font-semibold">Code PIN requis</h2>
         <p className="mt-2 text-sm text-muted-foreground">Saisissez le PIN pour déverrouiller les modifications pendant cette session.</p>
         <input
           autoFocus
           type="password"
           inputMode="numeric"
+          aria-label="Code PIN"
           className="field mt-4 font-mono"
           value={value}
           onChange={(e) => setValue(e.target.value)}

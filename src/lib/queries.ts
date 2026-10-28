@@ -1,4 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { db } from "./pin";
 import type { Material, ElementData, Component } from "./calc";
 
@@ -38,11 +39,32 @@ async function fetchAll() {
     ...x,
     items: li.data.filter((i: any) => i.list_id === x.id).map((i: any) => ({ element_id: i.element_id, quantity: Number(i.quantity) })),
   }));
-  return { materials, elements, lists, raw: { materials: m.data, elements: e.data, components: c.data, lists: l.data, list_items: li.data } };
+  const out = { materials, elements, lists, raw: { materials: m.data, elements: e.data, components: c.data, lists: l.data, list_items: li.data } };
+  writeCache(out);
+  return out;
+}
+
+type AllData = Awaited<ReturnType<typeof fetchAll>>;
+
+// Copie locale de la derniere lecture reussie : si la base est injoignable (pas de reseau,
+// Supabase en panne), l'appli reste consultable en lecture seule au lieu de rester sur « Chargement… ».
+const CACHE_KEY = "masse:copie-locale:v1";
+function writeCache(data: AllData) {
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify({ at: new Date().toISOString(), data })); } catch { /* stockage plein ou bloque */ }
+}
+function readCache(): { at: string; data: AllData } | null {
+  try {
+    const raw = typeof window === "undefined" ? null : localStorage.getItem(CACHE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
 }
 
 export function useData() {
-  return useQuery({ queryKey: ["all"], queryFn: fetchAll });
+  const q = useQuery({ queryKey: ["all"], queryFn: fetchAll, retry: 1, retryDelay: 800 });
+  const failed = !!q.error && !q.data;
+  const cached = useMemo(() => (failed ? readCache() : null), [failed]);
+  if (failed && cached) return { ...q, data: cached.data, error: null, isLoading: false, offline: true as const, offlineSince: cached.at };
+  return { ...q, offline: false as const, offlineSince: null };
 }
 export function useRefresh() {
   const qc = useQueryClient();
