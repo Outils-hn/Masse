@@ -291,7 +291,7 @@ body {
   border-collapse: collapse;
   & th.text-right { text-align: right; }
   & th { text-align: left; font-weight: 500; color: var(--muted-foreground); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--border); }
-  & td { padding: 0.45rem 0.5rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  & td { padding: 0.45rem 0.5rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
 }
 /* Chiffres cles (meme presentation que les autres applis) : grand chiffre, unite discrete */
 @utility key-box {
