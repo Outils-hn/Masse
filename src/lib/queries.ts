@@ -6,14 +6,19 @@ import type { Material, ElementData, Component } from "./calc";
 export interface ElementRow extends ElementData { id: string; updated_at: string; deleted_at: string | null }
 export interface ListRow { id: string; name: string; updated_at: string; deleted_at: string | null; items: { element_id: string; quantity: number }[] }
 
+/** Au-dela de ce delai sans reponse, on considere la base injoignable (copie locale ou message). */
+const TIMEOUT_MS = 8000;
+const withTimeout = <T,>(p: PromiseLike<T>) =>
+  Promise.race([p, new Promise<never>((_, rej) => setTimeout(() => rej(new Error("Délai dépassé")), TIMEOUT_MS))]);
+
 async function fetchAll() {
-  const [m, e, c, l, li] = await Promise.all([
+  const [m, e, c, l, li] = await withTimeout(Promise.all([
     db.from("materials").select("*").order("name"),
     db.from("elements").select("*").order("name"),
     db.from("components").select("*").order("position"),
     db.from("lists").select("*").order("name"),
     db.from("list_items").select("*").order("position"),
-  ]);
+  ]));
   const err = m.error || e.error || c.error || l.error || li.error;
   if (err) throw err;
   const materials: Material[] = m.data.map((x: any) => ({ ...x, value: Number(x.value) }));

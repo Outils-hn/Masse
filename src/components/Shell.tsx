@@ -16,17 +16,25 @@ const NAV = [
 
 const THEME_KEY = "masse-theme";
 
-/** Theme clair / sombre retenu sur l'ordinateur, comme dans les autres applis. */
+/**
+ * Theme clair / sombre retenu sur l'ordinateur, comme dans les autres applis.
+ * La classe est posee avant l'affichage par un petit script (voir __root.tsx) : pas de flash blanc.
+ */
 function useTheme() {
-  const [dark, setDark] = useState(false);
+  const [dark, setDarkState] = useState(false);
   useEffect(() => {
-    try { setDark(localStorage.getItem(THEME_KEY) === "dark"); } catch { /* stockage bloque */ }
+    let d = false;
+    try { d = localStorage.getItem(THEME_KEY) === "dark"; } catch { /* stockage bloque */ }
+    document.documentElement.classList.toggle("dark", d);
+    setDarkState(d);
   }, []);
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-    try { localStorage.setItem(THEME_KEY, dark ? "dark" : "light"); } catch { /* stockage bloque */ }
-  }, [dark]);
-  return [dark, setDark] as const;
+  const toggle = () => setDarkState((d) => {
+    const next = !d;
+    document.documentElement.classList.toggle("dark", next);
+    try { localStorage.setItem(THEME_KEY, next ? "dark" : "light"); } catch { /* stockage bloque */ }
+    return next;
+  });
+  return [dark, toggle] as const;
 }
 
 export function Shell({ children }: { children: ReactNode }) {
@@ -59,7 +67,7 @@ export function Shell({ children }: { children: ReactNode }) {
               <span className="status">Lecture seule</span>
             )}
             <button
-              onClick={() => setDark((d) => !d)}
+              onClick={setDark}
               className="inline-flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               aria-label="Basculer le thème"
             >

@@ -84,6 +84,10 @@ function ElementsPage() {
   }, [select]);
   const update: Update = useCallback((fn) => setDraft((d) => (d ? fn(d) : d)), []);
   const problems = useMemo<Problems>(() => (draft ? elementProblems(draft, mats) : {}), [draft, mats]);
+  const filtered = useMemo(() => {
+    const ql = q.toLowerCase();
+    return elements.filter((e) => e.name.toLowerCase().includes(ql));
+  }, [elements, q]);
 
   if (isLoading || error || !data) return <Etat isLoading={isLoading} error={error} />;
 
@@ -149,8 +153,6 @@ function ElementsPage() {
     setBaseline("");
   };
 
-  const ql = q.toLowerCase();
-  const filtered = elements.filter((e) => e.name.toLowerCase().includes(ql));
 
   return (
     <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
@@ -449,25 +451,7 @@ const ComponentRow = memo(function ComponentRow({
     <div className={`rounded-md border p-3 ${msgs.length ? "border-destructive/50" : ""}`}>
       <div className="flex flex-wrap items-end gap-3">
         <label className="min-w-[200px] flex-1 text-xs text-muted-foreground">Matériau
-          <select
-            className={`field mt-1 text-foreground ${e["material_id"] ? "field-error" : ""}`}
-            value={c.material_id}
-            aria-invalid={!!e["material_id"] || undefined}
-            onChange={(ev) => onPick(i, ev.target.value)}
-          >
-            <option value="" disabled>— Choisir un matériau —</option>
-            {groups.map((g) => (
-              <optgroup key={g.label} label={g.label}>
-                {g.items.map((x) => (
-                  <option key={x.id} value={x.id}>{x.name} — {fmt(x.value, x.mode === "density" ? 0 : 2)} {MODES[x.mode].unit}</option>
-                ))}
-              </optgroup>
-            ))}
-            {others.map((x) => (
-              <option key={x.id} value={x.id}>{x.name} — {fmt(x.value, x.mode === "density" ? 0 : 2)} {MODES[x.mode].unit}</option>
-            ))}
-            {m?.deleted_at && <option value={m.id}>{m.name} (supprimé)</option>}
-          </select>
+          <MaterialSelect i={i} value={c.material_id} deleted={m?.deleted_at ? m : undefined} invalid={!!e["material_id"]} groups={groups} others={others} onPick={onPick} />
         </label>
         {m?.mode === "density" && (
           <>
@@ -527,5 +511,43 @@ const ComponentRow = memo(function ComponentRow({
         </ul>
       )}
     </div>
+  );
+});
+
+/**
+ * Liste deroulante des materiaux, memorisee a part : changer la largeur modifie la formule
+ * de toutes les lignes, mais pas leurs listes (200 materiaux x 50 lignes = 10 000 options).
+ */
+const MaterialSelect = memo(function MaterialSelect({
+  i, value, deleted, invalid, groups, others, onPick,
+}: {
+  i: number;
+  value: string;
+  deleted: Material | undefined;
+  invalid: boolean;
+  groups: Group[];
+  others: Material[];
+  onPick: (i: number, id: string) => void;
+}) {
+  return (
+    <select
+      className={`field mt-1 text-foreground ${invalid ? "field-error" : ""}`}
+      value={value}
+      aria-invalid={invalid || undefined}
+      onChange={(ev) => onPick(i, ev.target.value)}
+    >
+      <option value="" disabled>— Choisir un matériau —</option>
+      {groups.map((g) => (
+        <optgroup key={g.label} label={g.label}>
+          {g.items.map((x) => (
+            <option key={x.id} value={x.id}>{x.name} — {fmt(x.value, x.mode === "density" ? 0 : 2)} {MODES[x.mode].unit}</option>
+          ))}
+        </optgroup>
+      ))}
+      {others.map((x) => (
+        <option key={x.id} value={x.id}>{x.name} — {fmt(x.value, x.mode === "density" ? 0 : 2)} {MODES[x.mode].unit}</option>
+      ))}
+      {deleted && <option value={deleted.id}>{deleted.name} (supprimé)</option>}
+    </select>
   );
 });

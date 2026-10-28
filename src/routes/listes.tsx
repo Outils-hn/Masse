@@ -171,7 +171,7 @@ function ListsPage() {
                           <div className="mt-1 text-xs text-destructive">Élément dans la corbeille : restaurez-le ou retirez cette ligne.</div>
                         )}
                       </td>
-                      <td><NumInput digits={0} value={r.it.quantity} invalid={!(r.it.quantity >= 1 && Number.isInteger(r.it.quantity))} onChange={(v) => setDraft({ ...draft, items: draft.items.map((x, j) => (j === i ? { ...x, quantity: v ?? 0 } : x)) })} /></td>
+                      <td><NumInput digits={0} ariaLabel={`Quantité de la ligne ${i + 1}`} value={r.it.quantity} invalid={!(r.it.quantity >= 1 && Number.isInteger(r.it.quantity))} onChange={(v) => setDraft({ ...draft, items: draft.items.map((x, j) => (j === i ? { ...x, quantity: v ?? 0 } : x)) })} /></td>
                       <td className="num">{fmt(r.unit, 0)}</td>
                       <td className="num">{fmt(r.unit * r.it.quantity, 0)}</td>
                       <td className="text-right"><button className="btn btn-sm btn-danger" aria-label={`Retirer la ligne ${i + 1}`} onClick={() => setDraft({ ...draft, items: draft.items.filter((_, j) => j !== i) })}>✕</button></td>

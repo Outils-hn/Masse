@@ -11,6 +11,7 @@ export const NumInput = memo(function NumInput({
   placeholder,
   invalid,
   describedBy,
+  ariaLabel,
 }: {
   value: number | null;
   onChange: (v: number | null) => void;
@@ -21,6 +22,8 @@ export const NumInput = memo(function NumInput({
   /** Valeur lisible mais hors limites (ex. epaisseur negative) : bordure rouge. */
   invalid?: boolean;
   describedBy?: string;
+  /** Libelle pour un champ sans etiquette visible (ex. cellule de tableau). */
+  ariaLabel?: string;
 }) {
   const show = (v: number | null) => inputText(v, digits);
   const [text, setText] = useState(show(value));
@@ -34,6 +37,7 @@ export const NumInput = memo(function NumInput({
       className={`field num ${bad || invalid ? "field-error" : ""} ${className}`}
       aria-invalid={bad || invalid || undefined}
       aria-describedby={describedBy}
+      aria-label={ariaLabel}
       value={text}
       placeholder={placeholder}
       inputMode="decimal"

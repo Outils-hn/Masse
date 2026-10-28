@@ -109,8 +109,8 @@ await step("Ecran principal", async () => {
   // Enregistrement : PIN faux puis bon PIN
   await page.getByLabel("Largeur L (mm)").fill("1250"); await page.keyboard.press("Tab");
   await page.getByRole("button", { name: "Enregistrer" }).click(); await page.waitForTimeout(300);
-  await page.getByLabel("Code PIN").fill("0000"); await page.keyboard.press("Enter"); await page.waitForTimeout(400);
-  await page.getByLabel("Code PIN").fill("1234"); await page.keyboard.press("Enter"); await page.waitForTimeout(900);
+  await page.getByLabel("Code PIN", { exact: true }).fill("0000"); await page.keyboard.press("Enter"); await page.waitForTimeout(400);
+  await page.getByLabel("Code PIN", { exact: true }).fill("1234"); await page.keyboard.press("Enter"); await page.waitForTimeout(900);
   const t = await toasts(page);
   verif("Bon PIN : plus de « PIN incorrect » affiche", !/PIN incorrect/.test(t), t);
   verif("Element enregistre", /enregistré/.test(t) && etat.rpc.includes("save_element"));
@@ -129,8 +129,10 @@ await step("Ecran principal", async () => {
 
   // Hors ligne avec copie locale
   etat.horsLigne = true;
-  await page.reload({ waitUntil: "load" }); await page.waitForTimeout(3500);
-  verif("Hors ligne : copie locale affichee", await page.getByText(/copie locale du/).isVisible() && await page.getByText("Cassette alu").first().isVisible());
+  let t0 = Date.now();
+  await page.reload({ waitUntil: "load" });
+  const copie = await page.getByText(/copie locale du/).waitFor({ timeout: 20000 }).then(() => true, () => false);
+  verif("Hors ligne : copie locale affichee", copie && await page.getByText("Cassette alu").first().isVisible(), `${Date.now() - t0} ms`);
   await shot(page, "07-hors-ligne-copie", false);
   await c.close();
 });
@@ -138,8 +140,10 @@ await step("Ecran principal", async () => {
 await step("Hors ligne sans copie", async () => {
   const { c, page, etat } = await ctx();
   etat.horsLigne = true;
-  await aller(page); await page.waitForTimeout(3000);
-  verif("Hors ligne sans copie : message et bouton Réessayer", await page.getByText("Base de données injoignable").isVisible() && await page.getByRole("button", { name: "Réessayer" }).isVisible());
+  const t0 = Date.now();
+  await page.goto(BASE, { waitUntil: "load" });
+  const vu = await page.getByText("Base de données injoignable").waitFor({ timeout: 20000 }).then(() => true, () => false);
+  verif("Hors ligne sans copie : message et bouton Réessayer", vu && await page.getByRole("button", { name: "Réessayer" }).isVisible(), `${Date.now() - t0} ms`);
   await shot(page, "08-hors-ligne-vide", false);
   await c.close();
 });
