@@ -84,7 +84,7 @@ await step("Ecran principal", async () => {
   verif("Format suisse dans la liste « 1'200 × 3'000 mm »", await page.getByText("1'200 × 3'000 mm").first().isVisible());
   const axe = await new AxeBuilder({ page }).analyze();
   const graves = axe.violations.filter((v) => v.impact === "critical" || v.impact === "serious");
-  verif("Accessibilite Elements : aucun defaut grave", !graves.length, graves.map((v) => `${v.id} ${v.nodes.length}`).join(", "));
+  verif("Accessibilite Elements : aucun defaut grave", !graves.length, graves.map((v) => `${v.id} ${v.nodes.length} : ${v.nodes.slice(0, 5).map((x) => x.target.join(" ") + " " + (x.any[0]?.data?.contrastRatio ?? "")).join(" ; ")}`).join(", "));
 
   // Valeurs absurdes : signalees et enregistrement refuse (sans demander le PIN)
   await page.getByLabel("Largeur L (mm)").fill("-1000"); await page.keyboard.press("Tab");

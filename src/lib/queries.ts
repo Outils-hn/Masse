@@ -7,7 +7,7 @@ export interface ElementRow extends ElementData { id: string; updated_at: string
 export interface ListRow { id: string; name: string; updated_at: string; deleted_at: string | null; items: { element_id: string; quantity: number }[] }
 
 /** Au-dela de ce delai sans reponse, on considere la base injoignable (copie locale ou message). */
-const TIMEOUT_MS = 8000;
+const TIMEOUT_MS = 5000;
 const withTimeout = <T,>(p: PromiseLike<T>) =>
   Promise.race([p, new Promise<never>((_, rej) => setTimeout(() => rej(new Error("Délai dépassé")), TIMEOUT_MS))]);
 
@@ -65,7 +65,7 @@ function readCache(): { at: string; data: AllData } | null {
 }
 
 export function useData() {
-  const q = useQuery({ queryKey: ["all"], queryFn: fetchAll, retry: 1, retryDelay: 800 });
+  const q = useQuery({ queryKey: ["all"], queryFn: fetchAll, retry: 0 });
   const failed = !!q.error && !q.data;
   const cached = useMemo(() => (failed ? readCache() : null), [failed]);
   if (failed && cached) return { ...q, data: cached.data, error: null, isLoading: false, offline: true as const, offlineSince: cached.at };
