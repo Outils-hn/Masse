@@ -8,6 +8,7 @@ import { NumInput } from "@/components/NumInput";
 import { Etat } from "@/components/masse/Etat";
 import { exportElementPdf } from "@/lib/fiche-pdf";
 import { elementProblems, summary, type Problems } from "@/lib/validate";
+import { FicheIndexLien } from "@/components/famille/FicheIndexLien";
 import { CATEGORIES, MODES, elementResult, fmt, glassThickness, type Component, type ElementData, type Material } from "@/lib/calc";
 
 export const Route = createFileRoute("/")({
@@ -452,6 +453,7 @@ const ComponentRow = memo(function ComponentRow({
       <div className="flex flex-wrap items-end gap-3">
         <label className="min-w-[200px] flex-1 text-xs text-muted-foreground">Matériau
           <MaterialSelect i={i} value={c.material_id} deleted={m?.deleted_at ? m : undefined} invalid={!!e["material_id"]} groups={groups} others={others} onPick={onPick} />
+          {m?.index_id && <span className="mt-1 block"><FicheIndexLien value={{ id: m.index_id, name: m.index_name ?? "Fiche technique" }} /></span>}
         </label>
         {m?.mode === "density" && (
           <>
