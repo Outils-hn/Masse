@@ -30,7 +30,9 @@ function donnees({ gros = false } = {}) {
   }
   const lists = [{ id: uid(), name: "Livraison 1", deleted_at: null, created_at: now, updated_at: now }];
   const list_items = [{ id: uid(), list_id: lists[0].id, element_id: elements[0].id, quantity: 12, position: 0 }, { id: uid(), list_id: lists[0].id, element_id: elements[1].id, quantity: 4, position: 1 }];
-  return { materials, elements, components, lists, list_items };
+  // Fiches d'Index (autre base, simulee aussi) pour les liens « Fiche technique »
+  const products = [{ id: "fiche-alu", name: "Tôle alu EN AW-5754", supplier: "Novelis", category: "Profilés & Accessoires", deleted_at: null }];
+  return { materials, elements, components, lists, list_items, products };
 }
 
 async function ctx({ gros = false, dark = false } = {}) {
@@ -46,6 +48,7 @@ async function ctx({ gros = false, dark = false } = {}) {
     if (!m[1]) return route.fulfill({ json: db[m[2]] ?? [] });
     const body = JSON.parse(route.request().postData() || "{}");
     etat.rpc.push(m[2]);
+    etat.bodies = etat.bodies || {}; etat.bodies[m[2]] = body;
     if (body.p_pin !== "1234") return route.fulfill({ json: { ok: false, error: "PIN incorrect (4 essai(s) restant(s))." } });
     if (m[2] === "save_element") {
       const p = body.p; const id = p.id || uid();
@@ -175,6 +178,23 @@ for (const [chemin, nom] of [["materiaux", "Matériaux"], ["listes", "Listes"], 
     await c.close();
   });
 }
+
+await step("Lien vers une fiche Index", async () => {
+  const { c, page, etat } = await ctx();
+  await aller(page, "materiaux");
+  await page.getByRole("button", { name: "Modifier" }).first().click(); await page.waitForTimeout(200);
+  await page.getByRole("button", { name: "Lier une fiche Index" }).click(); await page.waitForTimeout(400);
+  await page.getByLabel("Rechercher une fiche dans Index").fill("5754"); await page.waitForTimeout(200);
+  await page.getByRole("button", { name: /Tôle alu EN AW-5754/ }).click();
+  verif("Fiche Index choisie et affichée", await page.getByRole("link", { name: /Tôle alu EN AW-5754/ }).isVisible());
+  const href = await page.getByRole("link", { name: /Tôle alu EN AW-5754/ }).getAttribute("href");
+  verif("Lien direct vers la fiche dans Index", href === "https://index-hn.lovable.app/?fiche=fiche-alu", href ?? "");
+  await page.getByRole("button", { name: "Enregistrer" }).click(); await page.waitForTimeout(300);
+  await page.getByLabel("Code PIN", { exact: true }).fill("1234"); await page.keyboard.press("Enter"); await page.waitForTimeout(800);
+  verif("Lien enregistré avec le matériau", etat.bodies?.save_material?.p?.index_id === "fiche-alu", JSON.stringify(etat.bodies?.save_material?.p?.index_id));
+  await page.screenshot({ path: `${OUT}/30-lien-index.png`, fullPage: false });
+  await c.close();
+});
 
 await step("Mode sombre", async () => {
   const { c, page } = await ctx({ dark: true });

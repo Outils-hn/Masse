@@ -25,6 +25,9 @@ export interface Material {
   value: number;
   source: string;
   note: string;
+  /** Fiche technique liee dans Index (identifiant + nom affiche). */
+  index_id?: string | null;
+  index_name?: string | null;
   deleted_at: string | null;
   updated_at: string;
 }

@@ -7,6 +7,7 @@ import { NumInput } from "@/components/NumInput";
 import { Etat } from "@/components/masse/Etat";
 import { ask } from "@/lib/confirm";
 import { materialProblems } from "@/lib/validate";
+import { FicheIndexLien } from "@/components/famille/FicheIndexLien";
 import { CATEGORIES, MODES, fmt, isUnverified, type Material, type Mode } from "@/lib/calc";
 
 export const Route = createFileRoute("/materiaux")({
@@ -113,6 +114,14 @@ function MaterialsPage() {
             <label className="text-xs text-muted-foreground lg:col-span-2">Note
               <input className="field mt-1 text-foreground" value={edit.note} onChange={(e) => setEdit({ ...edit, note: e.target.value })} />
             </label>
+            <div className="text-xs text-muted-foreground lg:col-span-2">Fiche technique (Index)
+              <div className="mt-2">
+                <FicheIndexLien
+                  value={edit.index_id ? { id: edit.index_id, name: edit.index_name ?? "Fiche" } : null}
+                  onChange={(f) => setEdit({ ...edit, index_id: f?.id ?? null, index_name: f?.name ?? null })}
+                />
+              </div>
+            </div>
             <div className="flex justify-end gap-2 sm:col-span-2 lg:col-span-4">
               <button className="btn" onClick={() => setEdit(null)}>Annuler</button>
               <button className="btn btn-primary" onClick={save}>Enregistrer</button>
@@ -128,7 +137,11 @@ function MaterialsPage() {
             <tbody>
               {list.map((m) => (
                 <tr key={m.id}>
-                  <td className="font-medium">{m.name}{m.note && <div className="text-xs font-normal text-muted-foreground">{m.note}</div>}</td>
+                  <td className="font-medium">
+                    {m.name}
+                    {m.note && <div className="text-xs font-normal text-muted-foreground">{m.note}</div>}
+                    {m.index_id && <div className="mt-0.5 font-normal"><FicheIndexLien value={{ id: m.index_id, name: m.index_name ?? "Fiche technique" }} /></div>}
+                  </td>
                   <td>{CATEGORIES[m.category] ?? m.category}</td>
                   <td>{MODES[m.mode].label}</td>
                   <td className="num whitespace-nowrap">{fmt(m.value, m.mode === "density" ? 0 : 2)} <span className="text-muted-foreground">{MODES[m.mode].unit}</span></td>
