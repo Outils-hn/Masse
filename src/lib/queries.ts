@@ -1,18 +1,24 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { db } from "./pin";
 import type { Material, ElementData, Component } from "./calc";
 
 export interface ElementRow extends ElementData { id: string; updated_at: string; deleted_at: string | null }
 export interface ListRow { id: string; name: string; updated_at: string; deleted_at: string | null; items: { element_id: string; quantity: number }[] }
 
+/** Au-dela de ce delai sans reponse, on considere la base injoignable (copie locale ou message). */
+const TIMEOUT_MS = 5000;
+const withTimeout = <T,>(p: PromiseLike<T>) =>
+  Promise.race([p, new Promise<never>((_, rej) => setTimeout(() => rej(new Error("Délai dépassé")), TIMEOUT_MS))]);
+
 async function fetchAll() {
-  const [m, e, c, l, li] = await Promise.all([
+  const [m, e, c, l, li] = await withTimeout(Promise.all([
     db.from("materials").select("*").order("name"),
     db.from("elements").select("*").order("name"),
     db.from("components").select("*").order("position"),
     db.from("lists").select("*").order("name"),
     db.from("list_items").select("*").order("position"),
-  ]);
+  ]));
   const err = m.error || e.error || c.error || l.error || li.error;
   if (err) throw err;
   const materials: Material[] = m.data.map((x: any) => ({ ...x, value: Number(x.value) }));
@@ -38,11 +44,32 @@ async function fetchAll() {
     ...x,
     items: li.data.filter((i: any) => i.list_id === x.id).map((i: any) => ({ element_id: i.element_id, quantity: Number(i.quantity) })),
   }));
-  return { materials, elements, lists, raw: { materials: m.data, elements: e.data, components: c.data, lists: l.data, list_items: li.data } };
+  const out = { materials, elements, lists, raw: { materials: m.data, elements: e.data, components: c.data, lists: l.data, list_items: li.data } };
+  writeCache(out);
+  return out;
+}
+
+type AllData = Awaited<ReturnType<typeof fetchAll>>;
+
+// Copie locale de la derniere lecture reussie : si la base est injoignable (pas de reseau,
+// Supabase en panne), l'appli reste consultable en lecture seule au lieu de rester sur « Chargement… ».
+const CACHE_KEY = "masse:copie-locale:v1";
+function writeCache(data: AllData) {
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify({ at: new Date().toISOString(), data })); } catch { /* stockage plein ou bloque */ }
+}
+function readCache(): { at: string; data: AllData } | null {
+  try {
+    const raw = typeof window === "undefined" ? null : localStorage.getItem(CACHE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
 }
 
 export function useData() {
-  return useQuery({ queryKey: ["all"], queryFn: fetchAll });
+  const q = useQuery({ queryKey: ["all"], queryFn: fetchAll, retry: 0 });
+  const failed = !!q.error && !q.data;
+  const cached = useMemo(() => (failed ? readCache() : null), [failed]);
+  if (failed && cached) return { ...q, data: cached.data, error: null, isLoading: false, offline: true as const, offlineSince: cached.at };
+  return { ...q, offline: false as const, offlineSince: null };
 }
 export function useRefresh() {
   const qc = useQueryClient();

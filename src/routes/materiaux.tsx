@@ -4,6 +4,9 @@ import { toast } from "sonner";
 import { useData, useRefresh, fmtDate } from "@/lib/queries";
 import { write } from "@/lib/pin";
 import { NumInput } from "@/components/NumInput";
+import { Etat } from "@/components/masse/Etat";
+import { ask } from "@/lib/confirm";
+import { materialProblems } from "@/lib/validate";
 import { CATEGORIES, MODES, fmt, isUnverified, type Material, type Mode } from "@/lib/calc";
 
 export const Route = createFileRoute("/materiaux")({
@@ -22,13 +25,13 @@ type Draft = Partial<Material> & { mode: Mode; value: number; name: string; cate
 const blank: Draft = { name: "", category: "metal", mode: "density", value: 0, source: "", note: "" };
 
 function MaterialsPage() {
-  const { data, isLoading } = useData();
+  const { data, isLoading, error } = useData();
   const refresh = useRefresh();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("");
   const [edit, setEdit] = useState<Draft | null>(null);
 
-  if (isLoading || !data) return <p className="text-muted-foreground">Chargement…</p>;
+  if (isLoading || error || !data) return <Etat isLoading={isLoading} error={error} />;
   const used = new Set(data.elements.filter((e) => !e.deleted_at).flatMap((e) => e.components.map((c) => c.material_id)));
   const list = data.materials.filter(
     (m) => !m.deleted_at && (!cat || m.category === cat) && (m.name + " " + m.source + " " + m.note).toLowerCase().includes(q.toLowerCase()),
@@ -36,16 +39,22 @@ function MaterialsPage() {
 
   const save = async () => {
     if (!edit) return;
+    const pb = materialProblems(edit);
+    if (pb) { toast.error(pb); return; }
     // Changer le mode (ex. kg/m³ -> kg/m²) d'un materiau deja utilise change le sens
     // des saisies dans tous les elements concernes : on demande confirmation
     const before = edit.id ? data.materials.find((m) => m.id === edit.id) : undefined;
     if (before && before.mode !== edit.mode) {
       const els = data.elements.filter((e) => !e.deleted_at && e.components.some((c) => c.material_id === before.id)).map((e) => e.name);
-      if (els.length && !confirm(
-        `Ce matériau est utilisé dans ${els.length} élément(s) : ${els.join(", ")}.\n` +
-        `Passer de « ${MODES[before.mode].label} » à « ${MODES[edit.mode].label} » va modifier leur poids et les champs à saisir.\n\n` +
-        `Astuce : dupliquez plutôt le matériau. Continuer quand même ?`,
-      )) return;
+      if (els.length && !(await ask({
+        title: "Changer le mode de calcul ?",
+        message:
+          `Ce matériau est utilisé dans ${els.length} élément(s) : ${els.join(", ")}.\n` +
+          `Passer de « ${MODES[before.mode].label} » à « ${MODES[edit.mode].label} » va modifier leur poids et les champs à saisir.\n\n` +
+          "Astuce : dupliquez plutôt le matériau.",
+        confirm: "Changer quand même",
+        danger: true,
+      }))) return;
     }
     const r = await write("save_material", { p: edit });
     if (r) {
@@ -56,7 +65,7 @@ function MaterialsPage() {
   };
   const del = async (m: Material) => {
     if (used.has(m.id)) { toast.error("Ce matériau est utilisé dans un élément : suppression impossible."); return; }
-    if (!confirm(`Mettre « ${m.name} » à la corbeille ?`)) return;
+    if (!(await ask({ title: `Mettre « ${m.name} » à la corbeille ?`, message: "Vous pourrez le restaurer pendant 30 jours.", confirm: "Mettre à la corbeille", danger: true }))) return;
     const r = await write("set_deleted", { p_table: "materials", p_id: m.id, p_deleted: true });
     if (r) {
       toast.success("Matériau mis à la corbeille.");
@@ -69,8 +78,8 @@ function MaterialsPage() {
       <section className="panel p-5">
         <div className="flex flex-wrap items-center gap-3">
           <h2 className="card-title mr-auto">Bibliothèque de matériaux</h2>
-          <input className="field w-56" placeholder="Rechercher…" value={q} onChange={(e) => setQ(e.target.value)} />
-          <select className="field w-48" value={cat} onChange={(e) => setCat(e.target.value)}>
+          <input className="field w-56" aria-label="Rechercher un matériau" placeholder="Rechercher…" value={q} onChange={(e) => setQ(e.target.value)} />
+          <select className="field w-48" aria-label="Filtrer par catégorie" value={cat} onChange={(e) => setCat(e.target.value)}>
             <option value="">Toutes catégories</option>
             {Object.entries(CATEGORIES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
           </select>
@@ -93,7 +102,7 @@ function MaterialsPage() {
               </select>
             </label>
             <label className="text-xs text-muted-foreground">Valeur ({MODES[edit.mode].unit})
-              <NumInput className="mt-1" digits={3} value={edit.value} onChange={(v) => setEdit({ ...edit, value: v ?? 0 })} />
+              <NumInput className="mt-1" digits={3} value={edit.value} invalid={!(edit.value > 0)} onChange={(v) => setEdit({ ...edit, value: v ?? 0 })} />
             </label>
             <label className="text-xs text-muted-foreground">Source
               <input className="field mt-1 text-foreground" value={edit.source} placeholder="ex. fiche technique Rockwool 2025" onChange={(e) => setEdit({ ...edit, source: e.target.value })} />
@@ -114,7 +123,7 @@ function MaterialsPage() {
         <div className="mt-4 overflow-x-auto">
           <table className="tbl">
             <thead>
-              <tr><th>Nom</th><th>Catégorie</th><th>Mode</th><th className="text-right">Valeur</th><th>Source</th><th>Modifié</th><th></th></tr>
+              <tr><th>Nom</th><th>Catégorie</th><th>Mode</th><th className="text-right">Valeur</th><th>Source</th><th>Modifié</th><th><span className="sr-only">Actions</span></th></tr>
             </thead>
             <tbody>
               {list.map((m) => (
