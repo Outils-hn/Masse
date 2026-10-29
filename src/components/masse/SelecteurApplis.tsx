@@ -3,9 +3,10 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 
 /**
  * Les applis de la famille : de simples liens vers leurs adresses publiees
- * (meme liste que dans Format, Linear et Trame). Chaque appli garde ses propres donnees.
+ * (meme liste dans les 7 applis). Chaque appli garde ses propres donnees.
  */
 const APPLIS = [
+  { nom: "Access", role: "Annuaire fournisseurs", url: "https://access-hn.lovable.app", couleur: "#C2255C" },
   { nom: "Format", role: "Débit de panneaux", url: "https://format-hn.lovable.app", couleur: "#FF4D00" },
   { nom: "Index", role: "Fiches techniques", url: "https://index-hn.lovable.app", couleur: "#6D4AFF" },
   { nom: "Linear", role: "Mise en barre", url: "https://linear-hn.lovable.app", couleur: "#2B50FF" },
