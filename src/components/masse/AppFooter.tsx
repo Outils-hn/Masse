@@ -1,3 +1,4 @@
+import { LienRetour } from "./LienRetour";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -24,7 +25,8 @@ export function AppFooter() {
         · {APP_YEAR} ·{" "}
         <Link to="/corbeille" hash="sauvegarde" className="underline-offset-2 transition-colors hover:text-foreground hover:underline">
           Sauvegarde
-        </Link>
+        </Link>{" "}
+        · <LienRetour app="Masse" version={APP_VERSION} />
       </p>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-sm text-left">
