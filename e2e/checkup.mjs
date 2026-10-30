@@ -99,6 +99,7 @@ await step("Ecran principal", async () => {
   verif("Composition de verre « abc » signalee", await page.getByText(/composition de verre non reconnue/).isVisible());
   await shot(page, "04-saisie-invalide");
   await page.getByLabel("Composition verre").first().fill("6/16/6"); await page.keyboard.press("Tab");
+  verif("Verre : pas de champ Faces / couches, épaisseur de verre affichée", await page.getByText("Poids calculé sur l'épaisseur totale de verre (12 mm).").first().isVisible());
 
   // Modifications non enregistrees : fenetre au style de l'appli
   await page.getByRole("link", { name: "Matériaux" }).click(); await page.waitForTimeout(300);
