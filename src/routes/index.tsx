@@ -479,9 +479,17 @@ const ComponentRow = memo(function ComponentRow({
         )}
         {(m?.mode === "density" || m?.mode === "surface") && (
           <>
-            <label className="w-24 text-xs text-muted-foreground">Faces / couches
-              <NumInput className="mt-1" digits={0} value={c.faces} invalid={!!e["faces"]} describedBy={errId} onChange={(v) => onChange(i, { faces: v ?? 1 })} />
-            </label>
+            {/* Verre : la composition additionne deja tous les verres (6/16/6 = 12 mm), le champ ne sert pas.
+                Il reste visible seulement si une ancienne saisie l'a mis a autre chose que 1, pour pouvoir le corriger. */}
+            {m.category === "verre" && c.faces === 1 ? (
+              <p className="w-44 self-center text-xs text-muted-foreground">
+                Poids calculé sur l'épaisseur totale de verre{c.thickness_mm > 0 ? ` (${fmt(c.thickness_mm, Number.isInteger(c.thickness_mm) ? 0 : 1)} mm)` : ""}.
+              </p>
+            ) : (
+              <label className="w-24 text-xs text-muted-foreground" title="Nombre de couches identiques : ex. tôle sur les 2 faces d'un caisson = 2">Faces / couches
+                <NumInput className="mt-1" digits={0} value={c.faces} invalid={!!e["faces"]} describedBy={errId} onChange={(v) => onChange(i, { faces: v ?? 1 })} />
+              </label>
+            )}
             <label className="w-36 text-xs text-muted-foreground">Surface perso. (m²)
               <NumInput className="mt-1" allowEmpty placeholder="L × H" digits={3} value={c.custom_area_m2} invalid={!!e["custom_area_m2"]} describedBy={errId} onChange={(v) => onChange(i, { custom_area_m2: v })} />
             </label>
