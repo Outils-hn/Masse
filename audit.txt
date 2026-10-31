@@ -1,0 +1,341 @@
+# Constats
+
+# Erreurs navigateur
+aucune
+
+# Metriques
+{
+  "mesures:principal": {
+    "titre": "Éléments — Masse",
+    "lang": "fr",
+    "viewportMeta": true,
+    "h1": 1,
+    "h2": 4,
+    "debordementHorizontal": false,
+    "largeurDoc": 1440,
+    "largeurFenetre": 1440,
+    "champs": 22,
+    "champsSansEtiquette": [],
+    "interactifs": 31,
+    "sansNom": [],
+    "cibles_sous_24px": 4,
+    "taillesTexte": {
+      "11": 10,
+      "12": 54,
+      "14": 28,
+      "16": 1,
+      "17": 1,
+      "40": 2
+    },
+    "tailleMin": 11,
+    "octetsTransferes": 878482,
+    "octetsJS": 787731,
+    "nbRequetes": 14,
+    "domContentLoaded": 360,
+    "load": 438,
+    "chargement_ms": 1609
+  },
+  "axe:principal": [
+    {
+      "regle": "label-content-name-mismatch",
+      "impact": "serious",
+      "aide": "Elements must have their visible text as part of their accessible name",
+      "occurrences": 1,
+      "exemple": "<button type=\"button\" id=\"radix-_R_4iaq_\" aria-haspopup=\"menu\" aria-expanded=\"false\" data-state=\"closed\" class=\"flex items-center gap-1 roun",
+      "cible": "#radix-_R_4iaq_"
+    }
+  ],
+  "principal:texte": "Masse Poids des éléments de façade Éléments Matériaux Listes Corbeille & sauvegarde Lecture seule ÉLÉMENTS + Nouveau Cassette alu 1'200 × 3'000 mm Élément 2 1'200 × 3'000 mm Élément 3 1'200 × 3'000 mm ÉLÉMENT Dupliquer Supprimer Enregistrer Nom Largeur L (mm) Hauteur H (mm) Majoration (%) Description Surface de base 3,600 m² · Dernière modification : 28.10.26 10:00 COMPOSANTS + Composant Matériau — Choisir un matériau — Aluminium — 2'700 kg/m³ Acier — 7'850 kg/m³ Verre — 2'500 kg/m³ Laine de roche — 40 kg/m³ Fibres-gypse 15 — 18,00 kg/m² Profilé alu 50x50 — 1,20 kg/m Patte de fixation — 0,35 kg/pièce Épaisseur (mm) Faces / couches Surface perso. (m²) ↑ ↓ ✕ 1 × 3,60 m² × 3,00 mm × 2'700 kg/m³ = 29,16 kg Matériau — Choisir un matériau — Aluminium — 2'700 kg/m³ Acier — 7'850 kg/m³ Verre — 2'5",
+  "focus": {
+    "total": 25,
+    "sansIndicateur": 0,
+    "exemples": []
+  },
+  "boutons": "Masse | + Nouveau | Cassette alu\n1'200 × 3'000 mm | Élément 2\n1'200 × 3'000 mm | Élément 3\n1'200 × 3'000 mm | Dupliquer | Supprimer | Enregistrer | + Composant | ↑ | ↓ | ✕ | ↑ | ↓ | ✕ | ↑ | ↓ | ✕ | ↑ | ↓ | ✕ | Copier le détail | Fiche PDF | Conçu par Hugo N.",
+  "champs": [
+    "Rechercher un élément",
+    "Nom",
+    "Largeur L (mm)",
+    "Hauteur H (mm)",
+    "Majoration (%)",
+    "Description",
+    "Matériau— Choisir un matériau —Aluminium — 2'700 kg/m³Acier — 7'850 kg/m³Verre — 2'500 kg/m³Laine de roche — 40 kg/m³Fibres-gypse 15 — 18,00 kg/m²Profilé alu 50x50 — 1,20 kg/mPatte de fixation — 0,35 kg/pièce",
+    "Épaisseur (mm)",
+    "Faces / couches",
+    "Surface perso. (m²)",
+    "Matériau— Choisir un matériau —Aluminium — 2'700 kg/m³Acier — 7'850 kg/m³Verre — 2'500 kg/m³Laine de roche — 40 kg/m³Fibres-gypse 15 — 18,00 kg/m²Profilé alu 50x50 — 1,20 kg/mPatte de fixation — 0,35 kg/pièce",
+    "Épaisseur (mm)",
+    "Faces / couches",
+    "Surface perso. (m²)",
+    "Matériau— Choisir un matériau —Aluminium — 2'700 kg/m³Acier — 7'850 kg/m³Verre — 2'500 kg/m³Laine de roche — 40 kg/m³Fibres-gypse 15 — 18,00 kg/m²Profilé alu 50x50 — 1,20 kg/mPatte de fixation — 0,35 kg/pièce",
+    "Composition verre",
+    "Épaisseur (mm)",
+    "Surface perso. (m²)",
+    "Matériau— Choisir un matériau —Aluminium — 2'700 kg/m³Acier — 7'850 kg/m³Verre — 2'500 kg/m³Laine de roche — 40 kg/m³Fibres-gypse 15 — 18,00 kg/m²Profilé alu 50x50 — 1,20 kg/mPatte de fixation — 0,35 kg/pièce",
+    "Épaisseur (mm)",
+    "Faces / couches",
+    "Surface perso. (m²)"
+  ],
+  "largeur:zero": {
+    "champ": "0",
+    "texte": "La largeur doit être supérieure à 0. | Résultat provisoire : 1 champ à corriger avant d'enregistrer."
+  },
+  "largeur:negatif": {
+    "champ": "-1000",
+    "texte": "La largeur doit être supérieure à 0. | Résultat provisoire : 1 champ à corriger avant d'enregistrer."
+  },
+  "largeur:texte": {
+    "champ": "-1000",
+    "texte": "La largeur doit être supérieure à 0. | Résultat provisoire : 1 champ à corriger avant d'enregistrer."
+  },
+  "largeur:enorme": {
+    "champ": "99999999",
+    "texte": "Largeur supérieure à 30 m : vérifiez l'unité (mm). | Résultat provisoire : 1 champ à corriger avant d'enregistrer."
+  },
+  "largeur:decimal": {
+    "champ": "1201",
+    "texte": ""
+  },
+  "largeur:apostrophe": {
+    "champ": "1200",
+    "texte": ""
+  },
+  "poids-affiche": [
+    "2'700 kg",
+    "7'850 kg",
+    "2'500 kg",
+    "40 kg",
+    "18,00 kg",
+    "1,20 kg"
+  ],
+  "pin:texte": "Code PIN requis Saisissez le PIN pour déverrouiller les modifications pendant cette session. Annuler Déverrouiller",
+  "pin:faux": "Masse Poids des éléments de façade Éléments Matériaux Listes Corbeille & sauvegarde Lecture seule ÉLÉMENTS + Nouveau Cassette alu 1'200 × 3'000 mm Élément 2 1'200 × 3'000 mm Élément 3 1'200 × 3'000 mm ÉLÉMENT Dupliquer Supprimer Enregistrer Nom Largeur L (mm) Hauteur H (mm) Majoration (%) Descriptio || ",
+  "mesures:listes": {
+    "titre": "Listes d'éléments — Masse",
+    "lang": "fr",
+    "viewportMeta": true,
+    "h1": 1,
+    "h2": 1,
+    "debordementHorizontal": false,
+    "largeurDoc": 1440,
+    "largeurFenetre": 1440,
+    "champs": 0,
+    "champsSansEtiquette": [],
+    "interactifs": 11,
+    "sansNom": [],
+    "cibles_sous_24px": 4,
+    "taillesTexte": {
+      "11": 1,
+      "12": 7,
+      "14": 5,
+      "16": 2,
+      "17": 1
+    },
+    "tailleMin": 11,
+    "octetsTransferes": 886665,
+    "octetsJS": 795914,
+    "nbRequetes": 15,
+    "domContentLoaded": 114,
+    "load": 189,
+    "chargement_ms": 1248
+  },
+  "axe:listes": [
+    {
+      "regle": "label-content-name-mismatch",
+      "impact": "serious",
+      "aide": "Elements must have their visible text as part of their accessible name",
+      "occurrences": 1,
+      "exemple": "<button type=\"button\" id=\"radix-_R_4iaq_\" aria-haspopup=\"menu\" aria-expanded=\"false\" data-state=\"closed\" class=\"flex items-center gap-1 roun",
+      "cible": "#radix-_R_4iaq_"
+    }
+  ],
+  "listes:texte": "Masse Poids des éléments de façade Éléments Matériaux Listes Corbeille & sauvegarde Lecture seule LISTES + Nouvelle Livraison 1 28.10.26 10:00 Sélectionnez ou créez une liste. Masse v2.4 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug",
+  "mesures:materiaux": {
+    "titre": "Bibliothèque de matériaux — Masse",
+    "lang": "fr",
+    "viewportMeta": true,
+    "h1": 1,
+    "h2": 1,
+    "debordementHorizontal": false,
+    "largeurDoc": 1440,
+    "largeurFenetre": 1440,
+    "champs": 2,
+    "champsSansEtiquette": [],
+    "interactifs": 31,
+    "sansNom": [],
+    "cibles_sous_24px": 4,
+    "taillesTexte": {
+      "11": 8,
+      "12": 40,
+      "14": 40,
+      "16": 1,
+      "17": 1
+    },
+    "tailleMin": 11,
+    "octetsTransferes": 885801,
+    "octetsJS": 795050,
+    "nbRequetes": 15,
+    "domContentLoaded": 122,
+    "load": 186,
+    "chargement_ms": 1322
+  },
+  "axe:materiaux": [
+    {
+      "regle": "label-content-name-mismatch",
+      "impact": "serious",
+      "aide": "Elements must have their visible text as part of their accessible name",
+      "occurrences": 1,
+      "exemple": "<button type=\"button\" id=\"radix-_R_4iaq_\" aria-haspopup=\"menu\" aria-expanded=\"false\" data-state=\"closed\" class=\"flex items-center gap-1 roun",
+      "cible": "#radix-_R_4iaq_"
+    }
+  ],
+  "materiaux:texte": "Masse Poids des éléments de façade Éléments Matériaux Listes Corbeille & sauvegarde Lecture seule BIBLIOTHÈQUE DE MATÉRIAUX Toutes catégories Métal Verre Isolant Panneau Profilé Joint / accessoire Autre + Matériau NOM CATÉGORIE MODE VALEUR SOURCE MODIFIÉ ACTIONS Aluminium Métal Densité 2'700 kg/m³ fiche test 28.10.26 10:00 Modifier Dupliquer Supprimer Acier Métal Densité 7'850 kg/m³ fiche test 28.10.26 10:00 Modifier Dupliquer Supprimer Verre Verre Densité 2'500 kg/m³ fiche test 28.10.26 10:00 Modifier Dupliquer Supprimer Laine de roche Isolant Densité 40 kg/m³ fiche test 28.10.26 10:00 Modifi",
+  "mesures:corbeille": {
+    "titre": "Corbeille et sauvegarde — Masse",
+    "lang": "fr",
+    "viewportMeta": true,
+    "h1": 1,
+    "h2": 2,
+    "debordementHorizontal": false,
+    "largeurDoc": 1440,
+    "largeurFenetre": 1440,
+    "champs": 0,
+    "champsSansEtiquette": [],
+    "interactifs": 10,
+    "sansNom": [],
+    "cibles_sous_24px": 4,
+    "taillesTexte": {
+      "11": 6,
+      "12": 5,
+      "14": 8,
+      "16": 1,
+      "17": 1
+    },
+    "tailleMin": 11,
+    "octetsTransferes": 883370,
+    "octetsJS": 792619,
+    "nbRequetes": 20,
+    "domContentLoaded": 112,
+    "load": 176,
+    "chargement_ms": 1262
+  },
+  "axe:corbeille": [
+    {
+      "regle": "label-content-name-mismatch",
+      "impact": "serious",
+      "aide": "Elements must have their visible text as part of their accessible name",
+      "occurrences": 1,
+      "exemple": "<button type=\"button\" id=\"radix-_R_4iaq_\" aria-haspopup=\"menu\" aria-expanded=\"false\" data-state=\"closed\" class=\"flex items-center gap-1 roun",
+      "cible": "#radix-_R_4iaq_"
+    }
+  ],
+  "corbeille:texte": "Masse Poids des éléments de façade Éléments Matériaux Listes Corbeille & sauvegarde Lecture seule CORBEILLE (30 JOURS) TYPE NOM SUPPRIMÉ LE ACTIONS La corbeille est vide. SAUVEGARDE Exportez toute la bibliothèque, les éléments et les listes dans un fichier JSON. L'import demande le PIN. Exporter (JSON) Importer (JSON) Masse v2.4 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug",
+  "volume:300-elements": {
+    "chargement_ms": 1250
+  },
+  "mesures:volume": {
+    "titre": "Éléments — Masse",
+    "lang": "fr",
+    "viewportMeta": true,
+    "h1": 1,
+    "h2": 4,
+    "debordementHorizontal": false,
+    "largeurDoc": 1440,
+    "largeurFenetre": 1440,
+    "champs": 178,
+    "champsSansEtiquette": [],
+    "interactifs": 466,
+    "sansNom": [],
+    "cibles_sous_24px": 4,
+    "taillesTexte": {
+      "11": 10,
+      "12": 703,
+      "14": 463,
+      "16": 1,
+      "17": 1,
+      "40": 2
+    },
+    "tailleMin": 11,
+    "octetsTransferes": 878482,
+    "octetsJS": 787731,
+    "nbRequetes": 14,
+    "domContentLoaded": 114,
+    "load": 174,
+    "chargement_ms": 1250
+  },
+  "volume:materiaux-200": {
+    "chargement_ms": 1450,
+    "texte": "Masse Poids des éléments de façade Éléments Matériaux Listes Corbeille & sauvegarde Lecture seule BIBLIOTHÈQUE DE MATÉRIAUX Toutes catégories Métal Verre Isolant Panneau Profilé Joint / accessoire Aut"
+  },
+  "hors-ligne:texte": "Masse Poids des éléments de façade Éléments Matériaux Listes Corbeille & sauvegarde Lecture seule Chargement… Masse v2.4 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug",
+  "mesures:mobile": {
+    "titre": "Éléments — Masse",
+    "lang": "fr",
+    "viewportMeta": true,
+    "h1": 1,
+    "h2": 4,
+    "debordementHorizontal": true,
+    "largeurDoc": 586,
+    "largeurFenetre": 390,
+    "champs": 22,
+    "champsSansEtiquette": [],
+    "interactifs": 31,
+    "sansNom": [],
+    "cibles_sous_24px": 3,
+    "taillesTexte": {
+      "11": 10,
+      "12": 54,
+      "14": 28,
+      "16": 1,
+      "17": 1,
+      "40": 2
+    },
+    "tailleMin": 11,
+    "octetsTransferes": 878482,
+    "octetsJS": 787731,
+    "nbRequetes": 14,
+    "domContentLoaded": 116,
+    "load": 181,
+    "chargement_ms": 1313
+  },
+  "mesures:tablette": {
+    "titre": "Éléments — Masse",
+    "lang": "fr",
+    "viewportMeta": true,
+    "h1": 1,
+    "h2": 4,
+    "debordementHorizontal": false,
+    "largeurDoc": 768,
+    "largeurFenetre": 768,
+    "champs": 22,
+    "champsSansEtiquette": [],
+    "interactifs": 31,
+    "sansNom": [],
+    "cibles_sous_24px": 4,
+    "taillesTexte": {
+      "11": 10,
+      "12": 54,
+      "14": 28,
+      "16": 1,
+      "17": 1,
+      "40": 2
+    },
+    "tailleMin": 11,
+    "octetsTransferes": 878482,
+    "octetsJS": 787731,
+    "nbRequetes": 14,
+    "domContentLoaded": 112,
+    "load": 176,
+    "chargement_ms": 1298
+  },
+  "axe:sombre": [
+    {
+      "regle": "label-content-name-mismatch",
+      "impact": "serious",
+      "aide": "Elements must have their visible text as part of their accessible name",
+      "occurrences": 1,
+      "exemple": "<button type=\"button\" id=\"radix-_R_4iaq_\" aria-haspopup=\"menu\" aria-expanded=\"false\" data-state=\"closed\" class=\"flex items-center gap-1 roun",
+      "cible": "#radix-_R_4iaq_"
+    }
+  ]
+}
