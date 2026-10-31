@@ -42,6 +42,10 @@ export function Shell({ children }: { children: ReactNode }) {
   const pin = usePin();
   const [dark, setDark] = useTheme();
   const { offline, offlineSince } = useData();
+  // La page de depart publiee (_shell.html) est generee pour « / » : apres le chargement,
+  // on recree les onglets pour que l'onglet actif corresponde a l'adresse ouverte (ex. /Masse/listes).
+  const [charge, setCharge] = useState(false);
+  useEffect(() => setCharge(true), []);
   return (
     <div className="flex min-h-screen flex-col">
       <Bandeau
@@ -51,7 +55,7 @@ export function Shell({ children }: { children: ReactNode }) {
           <span className="sr-only">Poids des éléments de façade</span>
         </>}
         onglets={NAV.map((n) => (
-          <Link key={n.to} to={n.to} className="bandeau-onglet" activeOptions={{ exact: true }}>{n.label}</Link>
+          <Link key={`${n.to}-${charge ? "client" : "page"}`} to={n.to} className="bandeau-onglet" activeOptions={{ exact: true }}>{n.label}</Link>
         ))}
         statut={pin ? (
           <>
