@@ -1,0 +1,28 @@
+OK     Titre h1 « Masse » dans le selecteur
+OK     Selecteur : Accueil + 8 applis dans l'ordre (Accueil, Access, Check, Format, Index, Linear, Masse, Strate, Trame)
+OK     Pied de page (Masse v2.1 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug)
+OK     Fenetre À propos
+OK     Format suisse dans la liste « 1'200 × 3'000 mm »
+ECHEC  Accessibilite Elements : aucun defaut grave (color-contrast 5 : #radix-_R_18aqH1_ 1.04 ; .text-lg 1.04 ; .gap-3.items-center.flex > div > p:nth-child(2) 1.03 ; .left-\[50\%\] > .text-sm.text-foreground 1.04 ; .border-t 1.03)
+OK     Largeur negative signalee
+OK     Largeur negative : enregistrement refuse (La largeur doit être supérieure à 0.)
+OK     Composition de verre « abc » signalee
+OK     Verre : pas de champ Faces / couches, épaisseur de verre affichée
+OK     Quitter avec des modifs : fenetre Épure
+OK     « Rester » garde la page
+OK     Bon PIN : plus de « PIN incorrect » affiche (Élément enregistré. | La largeur doit être supérieure à 0.)
+OK     Element enregistre
+OK     Fiche PDF telechargee (Fiche poids - Cassette alu.pdf)
+OK     Supprimer : fenetre Épure
+OK     Aucune fenetre native du navigateur (0)
+OK     Hors ligne : copie locale affichee (5924 ms)
+OK     Hors ligne sans copie : message et bouton Réessayer (5923 ms)
+OK     50 composants / 207 materiaux : saisie fluide (< 300 ms par frappe) (101 / 107 / 87 ms)
+OK     Accessibilite Matériaux : aucun defaut grave
+OK     Accessibilite Listes : aucun defaut grave
+OK     Accessibilite Corbeille : aucun defaut grave
+OK     Fiche Index choisie et affichée
+OK     Lien direct vers la fiche dans Index (https://index-hn.lovable.app/?fiche=fiche-alu)
+OK     Lien enregistré avec le matériau ("fiche-alu")
+OK     Mode sombre retenu
+OK     PDF : aucun nom d'auteur
