@@ -79,9 +79,9 @@ await step("Ecran principal", async () => {
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Masse v2.3 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
+  verif("Pied de page", pied === "Masse v2.4 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
   await page.getByRole("button", { name: "Conçu par Hugo N." }).click(); await page.waitForTimeout(200);
-  verif("Fenetre À propos", await page.getByRole("dialog").getByText("Version 2.3").isVisible());
+  verif("Fenetre À propos", await page.getByRole("dialog").getByText("Version 2.4").isVisible());
   await shot(page, "03-a-propos", false);
   await page.keyboard.press("Escape");
   verif("Format suisse dans la liste « 1'200 × 3'000 mm »", await page.getByText("1'200 × 3'000 mm").first().isVisible());
@@ -189,7 +189,7 @@ await step("Lien vers une fiche Index", async () => {
   await page.getByRole("button", { name: /Tôle alu EN AW-5754/ }).click();
   verif("Fiche Index choisie et affichée", await page.getByRole("link", { name: /Tôle alu EN AW-5754/ }).isVisible());
   const href = await page.getByRole("link", { name: /Tôle alu EN AW-5754/ }).getAttribute("href");
-  verif("Lien direct vers la fiche dans Index", href === "https://index-hn.lovable.app/?fiche=fiche-alu", href ?? "");
+  verif("Lien direct vers la fiche dans Index", href === "https://outils-hn.github.io/Index/?fiche=fiche-alu", href ?? "");
   await page.getByRole("button", { name: "Enregistrer" }).click(); await page.waitForTimeout(300);
   await page.getByLabel("Code PIN", { exact: true }).fill("1234"); await page.keyboard.press("Enter"); await page.waitForTimeout(800);
   verif("Lien enregistré avec le matériau", etat.bodies?.save_material?.p?.index_id === "fiche-alu", JSON.stringify(etat.bodies?.save_material?.p?.index_id));
