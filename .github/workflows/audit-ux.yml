@@ -1,4 +1,4 @@
-# Audit UX : parcours reel + cas limites avec valeurs fictives ; resultat publie sur la branche captures/audit-ux
+# Audit UX : parcours reel + cas limites avec valeurs fictives ; resultat publie sur la branche captures/audit-ux-resultats
 name: Audit UX
 on:
   push:
@@ -26,7 +26,7 @@ jobs:
       - name: Publier
         run: |
           cd out
-          git init -q -b captures/audit-ux
+          git init -q -b captures/audit-ux-resultats
           git config user.name "github-actions"; git config user.email "github-actions@users.noreply.github.com"
           git add -A && git commit -qm "Audit UX ($GITHUB_SHA)"
-          git push -qf "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" HEAD:refs/heads/captures/audit-ux
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" HEAD:refs/heads/captures/audit-ux-resultats
