@@ -2,6 +2,10 @@
 
 Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et fenêtre « À propos » le lisent).
 
+## 2.3 — 31 octobre 2026
+
+- Onglet actif correct quand on ouvre directement une page (ex. `/Masse/listes`) : avant, « Éléments » restait surligné.
+
 ## 2.2 — 31 octobre 2026
 
 - Publication sur GitHub Pages (`https://outils-hn.github.io/Masse/`) : l'appli est construite en mode SPA statique, sans serveur.
