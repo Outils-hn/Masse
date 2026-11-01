@@ -61,7 +61,7 @@ async function ctx({ gros = false, dark = false, largeur = 1440 } = {}) {
   const page = await c.newPage();
   page.on("pageerror", (e) => verif("Aucune erreur JavaScript", false, e.message.slice(0, 150)));
   page.on("dialog", (d) => { etat.natifs++; d.accept(); });
-  return { c, page, etat };
+  return { c, page, etat, db };
 }
 const aller = async (page, chemin = "") => { await page.goto(BASE + chemin, { waitUntil: "networkidle" }); await page.waitForTimeout(500); };
 const shot = (page, f, full = true) => page.screenshot({ path: `${OUT}/${f}.png`, fullPage: full });
@@ -156,6 +156,37 @@ await step("Telephone", async () => {
   verif("Accessibilite telephone : aucun defaut", !r.violations.length, r.violations.map((v) => `${v.id} (${v.impact}) ${v.nodes.length} : ${v.nodes.slice(0, 2).map((x) => x.target.join(" ")).join(" ; ")}`).join(" | "));
   await page.getByRole("button", { name: "Déverrouiller" }).click(); await page.waitForTimeout(300);
   verif("Bouton « Déverrouiller » ouvre la fenetre du code PIN", await page.getByRole("dialog").getByText("La consultation est libre").isVisible());
+  await c.close();
+});
+
+await step("Telephone : fenetres avec noms longs", async () => {
+  const { c, page, db } = await ctx({ largeur: 390 });
+  const LONG = "Cassette aluminium thermolaquée perforée avec isolation laine de roche et fixations cachées pour façade ventilée nord-est";
+  db.elements[0].name = LONG;
+  db.lists[0].name = "Livraison chantier Résidence Les Tilleuls du Grand Parc de la Vallée Bâtiment C étape 3";
+  await aller(page);
+  const fenetre = async (nom) => {
+    await page.waitForTimeout(500);
+    const r = await page.evaluate(() => {
+      const d = document.querySelector("[role=dialog],[role=alertdialog]");
+      if (!d) return null;
+      const b = d.getBoundingClientRect();
+      const hors = [...d.querySelectorAll("*")].filter((e) => { const x = e.getBoundingClientRect(); return x.width > 0 && (x.right > b.right + 1 || x.left < b.left - 1); }).slice(0, 4).map((e) => `${e.tagName}.${String(e.className).slice(0, 40)}`);
+      return { sw: d.scrollWidth - d.clientWidth, hors, page: document.documentElement.scrollWidth - window.innerWidth };
+    });
+    verif(`Telephone : fenetre « ${nom} » sans debordement`, !!r && r.sw <= 0 && r.hors.length === 0 && r.page <= 0, r ? `${r.sw} px ; ${r.hors.join(", ")} ; page ${r.page}` : "fenetre introuvable");
+    await shot(page, `10-${nom.replace(/\W+/g, "-")}`, false);
+  };
+  const debord = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+  verif("Telephone : liste avec nom d'element tres long sans debordement", debord <= 0, `${debord} px`);
+  await page.getByRole("button", { name: "Déverrouiller" }).click();
+  await fenetre("Code PIN");
+  await page.keyboard.press("Escape"); await page.waitForTimeout(500);
+  await page.getByRole("button", { name: "Supprimer" }).first().click();
+  await fenetre("Supprimer element nom long");
+  await page.getByRole("button", { name: "Annuler" }).click(); await page.waitForTimeout(400);
+  await page.getByRole("button", { name: "Conçu par Hugo N." }).click();
+  await fenetre("A propos");
   await c.close();
 });
 
