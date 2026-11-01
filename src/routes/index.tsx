@@ -314,11 +314,11 @@ function Editor({
             <FieldError id="err-name" msg={problems["name"]} />
           </label>
           <label className="text-xs text-muted-foreground">Largeur L (mm)
-            <NumInput className="mt-1" digits={0} value={draft.length_mm} invalid={!!problems["length_mm"]} describedBy="err-l" onChange={(v) => set({ length_mm: v ?? 0 })} />
+            <NumInput className="mt-1" digits={2} value={draft.length_mm} invalid={!!problems["length_mm"]} describedBy="err-l" onChange={(v) => set({ length_mm: v ?? 0 })} />
             <FieldError id="err-l" msg={problems["length_mm"]} />
           </label>
           <label className="text-xs text-muted-foreground">Hauteur H (mm)
-            <NumInput className="mt-1" digits={0} value={draft.height_mm} invalid={!!problems["height_mm"]} describedBy="err-h" onChange={(v) => set({ height_mm: v ?? 0 })} />
+            <NumInput className="mt-1" digits={2} value={draft.height_mm} invalid={!!problems["height_mm"]} describedBy="err-h" onChange={(v) => set({ height_mm: v ?? 0 })} />
             <FieldError id="err-h" msg={problems["height_mm"]} />
           </label>
           <label className="text-xs text-muted-foreground">Majoration (%)

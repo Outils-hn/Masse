@@ -39,6 +39,12 @@ export const db = supabase as any;
 const OFFLINE_MSG = "Base injoignable : vérifiez la connexion, rien n'a été enregistré.";
 const isNetwork = (e: { message?: string } | null | undefined) => /fetch|network|Load failed/i.test(e?.message ?? "");
 
+/** Bouton « Deverrouiller » du bandeau : demande le PIN et le garde pour la session. */
+export async function deverrouiller() {
+  const p = await askPin();
+  if (p) setPin(p);
+}
+
 /** Calls a PIN-protected RPC. Returns the result object or null when cancelled / failed. */
 export async function write(fn: string, args: Record<string, unknown>): Promise<any | null> {
   loadPin();
@@ -90,7 +96,7 @@ export function PinDialog() {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => close(null)} onKeyDown={(e) => e.key === "Escape" && close(null)}>
       <div className="panel w-full max-w-sm p-5 shadow-lg" role="dialog" aria-modal="true" aria-labelledby="pin-titre" onClick={(e) => e.stopPropagation()}>
         <h2 id="pin-titre" className="text-base font-semibold">Code PIN requis</h2>
-        <p className="mt-2 text-sm text-muted-foreground">Saisissez le PIN pour déverrouiller les modifications pendant cette session.</p>
+        <p className="mt-2 text-sm text-muted-foreground">La consultation est libre. Le PIN sert à modifier les éléments et la bibliothèque ; il reste valable jusqu'à la fermeture de l'onglet.</p>
         <input
           autoFocus
           type="password"

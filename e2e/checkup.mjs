@@ -35,8 +35,8 @@ function donnees({ gros = false } = {}) {
   return { materials, elements, components, lists, list_items, products };
 }
 
-async function ctx({ gros = false, dark = false } = {}) {
-  const c = await browser.newContext({ viewport: { width: 1440, height: 900 }, acceptDownloads: true });
+async function ctx({ gros = false, dark = false, largeur = 1440 } = {}) {
+  const c = await browser.newContext({ viewport: { width: largeur, height: largeur < 600 ? 800 : 900 }, acceptDownloads: true });
   if (dark) await c.addInitScript(() => localStorage.setItem("masse-theme", "dark"));
   const db = donnees({ gros });
   const etat = { horsLigne: false, natifs: 0, rpc: [] };
@@ -79,9 +79,9 @@ await step("Ecran principal", async () => {
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Masse v2.5 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
+  verif("Pied de page", pied === "Masse v2.6 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
   await page.getByRole("button", { name: "Conçu par Hugo N." }).click(); await page.waitForTimeout(200);
-  verif("Fenetre À propos", await page.getByRole("dialog").getByText("Version 2.5").isVisible());
+  verif("Fenetre À propos", await page.getByRole("dialog").getByText("Version 2.6").isVisible());
   await shot(page, "03-a-propos", false);
   await page.keyboard.press("Escape");
   verif("Format suisse dans la liste « 1'200 × 3'000 mm »", await page.getByText("1'200 × 3'000 mm").first().isVisible());
@@ -138,6 +138,24 @@ await step("Ecran principal", async () => {
   const copie = await page.getByText(/copie locale du/).waitFor({ timeout: 20000 }).then(() => true, () => false);
   verif("Hors ligne : copie locale affichee", copie && await page.getByText("Cassette alu").first().isVisible(), `${Date.now() - t0} ms`);
   await shot(page, "07-hors-ligne-copie", false);
+  await c.close();
+});
+
+await step("Telephone", async () => {
+  const { c, page } = await ctx({ largeur: 390 });
+  await aller(page);
+  await shot(page, "09-telephone");
+  const m = await page.evaluate(() => ({
+    debord: document.documentElement.scrollWidth - window.innerWidth,
+    large: [...document.querySelectorAll("body *")].filter((x) => x.getBoundingClientRect().right > window.innerWidth + 1 && x.offsetParent).slice(0, 4).map((x) => `${x.tagName}.${String(x.className).slice(0, 40)}`),
+    petits: [...document.querySelectorAll("main button, main a, header button, header a")].filter((x) => x.offsetParent && x.getBoundingClientRect().height > 0 && (x.getBoundingClientRect().height < 36 || x.getBoundingClientRect().width < 36)).map((x) => (x.getAttribute("aria-label") || x.textContent || "").trim().slice(0, 25)),
+  }));
+  verif("Telephone : aucun debordement horizontal", m.debord <= 0, `${m.debord} px ${m.large.join(" ; ")}`);
+  verif("Telephone : cibles tactiles assez grandes", m.petits.length === 0, m.petits.slice(0, 8).join(", "));
+  const r = await new AxeBuilder({ page }).analyze();
+  verif("Accessibilite telephone : aucun defaut", !r.violations.length, r.violations.map((v) => `${v.id} (${v.impact}) ${v.nodes.length} : ${v.nodes.slice(0, 2).map((x) => x.target.join(" ")).join(" ; ")}`).join(" | "));
+  await page.getByRole("button", { name: "Déverrouiller" }).click(); await page.waitForTimeout(300);
+  verif("Bouton « Déverrouiller » ouvre la fenetre du code PIN", await page.getByRole("dialog").getByText("La consultation est libre").isVisible());
   await c.close();
 });
 
