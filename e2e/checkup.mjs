@@ -61,7 +61,7 @@ async function ctx({ gros = false, dark = false, largeur = 1440 } = {}) {
   const page = await c.newPage();
   page.on("pageerror", (e) => verif("Aucune erreur JavaScript", false, e.message.slice(0, 150)));
   page.on("dialog", (d) => { etat.natifs++; d.accept(); });
-  return { c, page, etat };
+  return { c, page, etat, db };
 }
 const aller = async (page, chemin = "") => { await page.goto(BASE + chemin, { waitUntil: "networkidle" }); await page.waitForTimeout(500); };
 const shot = (page, f, full = true) => page.screenshot({ path: `${OUT}/${f}.png`, fullPage: full });
