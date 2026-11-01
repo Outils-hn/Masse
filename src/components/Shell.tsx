@@ -16,7 +16,7 @@ const NAV = [
 ] as const;
 
 const THEME_KEY = "masse-theme";
-// Reglage commun a toutes les applis (meme site) : le choix clair / sombre suit d\'une appli a l\'autre.
+// Reglage commun a toutes les applis (meme site) : le choix clair / sombre suit d'une appli a l\'autre.
 const SHARED_THEME_KEY = "outils-theme";
 
 /**
