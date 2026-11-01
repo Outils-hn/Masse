@@ -408,5 +408,5 @@ body { border-top: 3px solid var(--app); }
   .bandeau-icone { width: 40px; height: 40px; }
   .bandeau-onglet { min-height: 40px; }
   .bandeau-marque button, .bandeau-marque a { min-height: 40px; }
-  .btn { min-height: 40px; }
+  .btn, .btn-sm { min-height: 40px; min-width: 40px; }
 }
