@@ -16,6 +16,8 @@ const NAV = [
 ] as const;
 
 const THEME_KEY = "masse-theme";
+// Reglage commun a toutes les applis (meme site) : le choix clair / sombre suit d\'une appli a l\'autre.
+const SHARED_THEME_KEY = "outils-theme";
 
 /**
  * Theme clair / sombre retenu sur l'ordinateur, comme dans les autres applis.
@@ -25,14 +27,14 @@ function useTheme() {
   const [dark, setDarkState] = useState(false);
   useEffect(() => {
     let d = false;
-    try { d = localStorage.getItem(THEME_KEY) === "dark"; } catch { /* stockage bloque */ }
+    try { d = (localStorage.getItem(SHARED_THEME_KEY) || localStorage.getItem(THEME_KEY)) === "dark"; } catch { /* stockage bloque */ }
     document.documentElement.classList.toggle("dark", d);
     setDarkState(d);
   }, []);
   const toggle = () => setDarkState((d) => {
     const next = !d;
     document.documentElement.classList.toggle("dark", next);
-    try { localStorage.setItem(THEME_KEY, next ? "dark" : "light"); } catch { /* stockage bloque */ }
+    try { localStorage.setItem(THEME_KEY, next ? "dark" : "light"); localStorage.setItem(SHARED_THEME_KEY, next ? "dark" : "light"); } catch { /* stockage bloque */ }
     return next;
   });
   return [dark, toggle] as const;
