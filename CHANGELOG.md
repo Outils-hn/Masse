@@ -4,6 +4,13 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.6 — 1er novembre 2026
+
+- Nouveauté : sur téléphone, Masse s'affiche sans déborder, et un bouton « Déverrouiller » permet de passer en modification.
+- Les largeurs et hauteurs gardent leurs décimales à l'affichage (1200,75 n'est plus montré comme 1201).
+- Bouton « Déverrouiller » dans le bandeau et phrase d'aide dans la fenêtre du code PIN.
+- Boutons plus grands sur téléphone (40 px), bandeau resserré.
+
 ## 2.5 — 1er novembre 2026
 
 - Nouveauté : le mode clair ou sombre que tu choisis dans une appli est repris dans toutes les autres.

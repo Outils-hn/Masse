@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { Moon, Sun } from "lucide-react";
-import { usePin, setPin } from "@/lib/pin";
+import { usePin, setPin, deverrouiller } from "@/lib/pin";
 import { useData, fmtDate } from "@/lib/queries";
 import { SelecteurApplis } from "@/components/masse/SelecteurApplis";
 import { MasseMark } from "@/components/masse/MasseMark";
@@ -65,7 +65,10 @@ export function Shell({ children }: { children: ReactNode }) {
             <button className="bandeau-btn" onClick={() => setPin(null)}>Verrouiller</button>
           </>
         ) : (
-          <span className="bandeau-statut">Lecture seule</span>
+          <>
+            <span className="bandeau-statut">Lecture seule</span>
+            <button className="bandeau-btn" onClick={() => deverrouiller()}>Déverrouiller</button>
+          </>
         )}
         theme={
           <button onClick={setDark} className="bandeau-icone" aria-label="Basculer le thème">
