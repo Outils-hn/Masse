@@ -101,7 +101,7 @@ await step("Ecran principal", async () => {
   await page.getByRole("button", { name: "Conçu par Hugo N." }).click(); await page.waitForTimeout(200);
   verif("Fenetre À propos", await page.getByRole("dialog").getByText("Version 2.9").isVisible());
   await shot(page, "03-a-propos", false);
-  await page.keyboard.press("Escape");
+  await page.keyboard.press("Escape"); await page.waitForTimeout(500);
   verif("Format suisse dans la liste « 1'200 × 3'000 mm »", await page.getByText("1'200 × 3'000 mm").first().isVisible());
   const axe = await new AxeBuilder({ page }).analyze();
   const graves = axe.violations.filter((v) => v.impact === "critical" || v.impact === "serious");
