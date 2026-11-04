@@ -138,3 +138,10 @@ export function ConnexionDialog() {
     </div>
   );
 }
+
+/** Fichier JSON (sauvegarde) : export ET import reserves aux comptes connectes. */
+export function jsonPermis(): boolean {
+  if (etat.uid) return true;
+  toast.message("Fichier JSON : compte requis", { description: "Sans compte, on ne peut ni exporter ni importer de fichier JSON. Connectez-vous avec votre compte Index." });
+  return false;
+}
