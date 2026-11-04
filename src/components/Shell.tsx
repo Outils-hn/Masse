@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { Moon, Sun } from "lucide-react";
-import { usePin, setPin, deverrouiller } from "@/lib/pin";
+import { useCompte, deconnexion, seConnecter } from "@/lib/compte";
 import { useData, fmtDate } from "@/lib/queries";
 import { SelecteurApplis } from "@/components/masse/SelecteurApplis";
 import { MasseMark } from "@/components/masse/MasseMark";
@@ -41,7 +41,7 @@ function useTheme() {
 }
 
 export function Shell({ children }: { children: ReactNode }) {
-  const pin = usePin();
+  const compte = useCompte();
   const [dark, setDark] = useTheme();
   const { offline, offlineSince } = useData();
   // La page de depart publiee (_shell.html) est generee pour « / » : apres le chargement,
@@ -59,15 +59,17 @@ export function Shell({ children }: { children: ReactNode }) {
         onglets={NAV.map((n) => (
           <Link key={`${n.to}-${charge ? "client" : "page"}`} to={n.to} className="bandeau-onglet" activeOptions={{ exact: true }}>{n.label}</Link>
         ))}
-        statut={pin ? (
+        statut={compte.uid ? (
           <>
-            <span className="bandeau-statut ouvert">Modification déverrouillée</span>
-            <button className="bandeau-btn" onClick={() => setPin(null)}>Verrouiller</button>
+            <span className={compte.valide === false ? "bandeau-statut" : "bandeau-statut ouvert"} title={compte.email}>
+              {compte.valide === false ? "Compte à valider · lecture seule" : `Connecté · ${compte.email}`}
+            </span>
+            <button className="bandeau-btn" onClick={() => deconnexion()}>Se déconnecter</button>
           </>
         ) : (
           <>
             <span className="bandeau-statut">Lecture seule</span>
-            <button className="bandeau-btn" onClick={() => deverrouiller()}>Déverrouiller</button>
+            <button className="bandeau-btn" onClick={() => seConnecter()}>Se connecter</button>
           </>
         )}
         theme={
