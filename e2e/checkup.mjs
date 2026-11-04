@@ -97,11 +97,11 @@ await step("Ecran principal", async () => {
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Masse v2.8 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
+  verif("Pied de page", pied === "Masse v2.9 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
   await page.getByRole("button", { name: "Conçu par Hugo N." }).click(); await page.waitForTimeout(200);
-  verif("Fenetre À propos", await page.getByRole("dialog").getByText("Version 2.8").isVisible());
+  verif("Fenetre À propos", await page.getByRole("dialog").getByText("Version 2.9").isVisible());
   await shot(page, "03-a-propos", false);
-  await page.keyboard.press("Escape");
+  await page.keyboard.press("Escape"); await page.waitForTimeout(500);
   verif("Format suisse dans la liste « 1'200 × 3'000 mm »", await page.getByText("1'200 × 3'000 mm").first().isVisible());
   const axe = await new AxeBuilder({ page }).analyze();
   const graves = axe.violations.filter((v) => v.impact === "critical" || v.impact === "serious");
@@ -270,7 +270,7 @@ await step("Comptes Index (2.8)", async () => {
   // Compte connecte et valide : bandeau, ecriture directe, deconnexion
   let { c, page, etat } = await ctx({ connecte: true });
   await aller(page);
-  verif("Bandeau : « Connecté · email »", await page.getByText("Connecté · hugo@test.fr").isVisible());
+  verif("Bandeau : email seul", await page.getByText("hugo@test.fr", { exact: true }).isVisible());
   await page.getByRole("button", { name: "Se déconnecter" }).click(); await page.waitForTimeout(500);
   verif("Deconnexion : retour en « Lecture seule »", await page.getByText("Lecture seule").isVisible());
   await c.close();
@@ -289,7 +289,7 @@ await step("Comptes Index (2.8)", async () => {
   await aller(page);
   await page.getByRole("button", { name: "Se connecter" }).click(); await page.waitForTimeout(300);
   await connecter(page, "bon"); await page.waitForTimeout(600);
-  verif("Connexion depuis le bandeau", await page.getByText("Connecté · hugo@test.fr").isVisible());
+  verif("Connexion depuis le bandeau", await page.getByText("hugo@test.fr", { exact: true }).isVisible());
   await c.close();
 });
 

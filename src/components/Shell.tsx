@@ -62,7 +62,7 @@ export function Shell({ children }: { children: ReactNode }) {
         statut={compte.uid ? (
           <>
             <span className={compte.valide === false ? "bandeau-statut" : "bandeau-statut ouvert"} title={compte.email}>
-              {compte.valide === false ? "Compte à valider · lecture seule" : `Connecté · ${compte.email}`}
+              {compte.valide === false ? "Compte à valider · lecture seule" : compte.email}
             </span>
             <button className="bandeau-btn" onClick={() => deconnexion()}>Se déconnecter</button>
           </>
