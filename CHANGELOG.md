@@ -4,6 +4,12 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.7 — 4 novembre 2026
+
+- Nouveauté : la base de données de Masse est maintenant dans le même projet Supabase que Index, Access et Check (un seul projet à gérer). Rien ne change à l'usage : mêmes données, même code PIN.
+- Scripts de migration dans `supabase/migration-vers-index/` (sauvegarde de l'ancien projet, installation, import des données).
+- Avant la mise en ligne : sauvegarde puis installation dans Supabase (voir ces scripts).
+
 ## 2.6 — 1er novembre 2026
 
 - Nouveauté : sur téléphone, Masse s'affiche sans déborder, et un bouton « Déverrouiller » permet de passer en modification.
