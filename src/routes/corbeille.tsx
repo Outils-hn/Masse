@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useData, useRefresh, fmtDate } from "@/lib/queries";
-import { write } from "@/lib/pin";
+import { write } from "@/lib/compte";
 import { checkBackup, type Backup } from "@/lib/backup";
 import { Etat } from "@/components/masse/Etat";
 import { ask } from "@/lib/confirm";
@@ -94,7 +94,7 @@ function TrashPage() {
       </section>
       <section id="sauvegarde" className="panel scroll-mt-6 p-5">
         <h2 className="card-title">Sauvegarde</h2>
-        <p className="mt-2 text-sm text-muted-foreground">Exportez toute la bibliothèque, les éléments et les listes dans un fichier JSON. L'import demande le PIN.</p>
+        <p className="mt-2 text-sm text-muted-foreground">Exportez toute la bibliothèque, les éléments et les listes dans un fichier JSON. L'import demande d'être connecté.</p>
         <div className="mt-4 flex flex-wrap gap-2">
           <button className="btn btn-primary" onClick={exportJson}>Exporter (JSON)</button>
           <label className="btn cursor-pointer">

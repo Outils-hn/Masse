@@ -11,7 +11,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import { Shell } from "@/components/Shell";
-import { PinDialog } from "@/lib/pin";
+import { ConnexionDialog } from "@/lib/compte";
 import { ConfirmHost } from "@/lib/confirm";
 import { Toaster } from "@/components/ui/sonner";
 import appCss from "../styles.css?url";
@@ -128,7 +128,7 @@ function RootComponent() {
       <Shell>
         <Outlet />
       </Shell>
-      <PinDialog />
+      <ConnexionDialog />
       <ConfirmHost />
       <Toaster richColors position="top-center" />
     </QueryClientProvider>

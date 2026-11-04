@@ -1,5 +1,5 @@
 // Check-up automatique de Masse dans un vrai navigateur, avec Supabase SIMULE
-// (aucune lecture ni ecriture dans la vraie base ; donnees fictives, PIN de test « 1234 »).
+// (aucune lecture ni ecriture dans la vraie base ; donnees fictives, compte de test, mot de passe « bon »).
 // Resultat : checkup.txt (OK / ECHEC) + captures d'ecran et fiche PDF pour la revue visuelle.
 import { chromium } from "playwright";
 import AxeBuilder from "@axe-core/playwright";
@@ -35,21 +35,33 @@ function donnees({ gros = false } = {}) {
   return { materials, elements, components, lists, list_items, products };
 }
 
-async function ctx({ gros = false, dark = false, largeur = 1440 } = {}) {
+const CLE = "sb-ngfzwfbraqkdcocdcmib-auth-token";
+const b64 = (o) => Buffer.from(JSON.stringify(o)).toString("base64url");
+const SESSION = { access_token: `${b64({ alg: "HS256", typ: "JWT" })}.${b64({ sub: "u1", role: "authenticated", exp: 4102444800 })}.x`, token_type: "bearer", expires_in: 3600, expires_at: 4102444800, refresh_token: "r", user: { id: "u1", aud: "authenticated", email: "hugo@test.fr", app_metadata: {}, user_metadata: {}, created_at: "2026-01-01T00:00:00Z" } };
+// connecte : session deja ouverte (comme apres une connexion dans Index) ; valide : compte valide par un administrateur
+async function ctx({ gros = false, dark = false, largeur = 1440, connecte = false, valide = true } = {}) {
   const c = await browser.newContext({ viewport: { width: largeur, height: largeur < 600 ? 800 : 900 }, acceptDownloads: true });
   if (dark) await c.addInitScript(() => localStorage.setItem("masse-theme", "dark"));
   const db = donnees({ gros });
-  const etat = { horsLigne: false, natifs: 0, rpc: [] };
+  if (connecte) await c.addInitScript(([k, v]) => localStorage.setItem(k, v), [CLE, JSON.stringify(SESSION)]);
+  const etat = { horsLigne: false, natifs: 0, rpc: [], valide, connexions: 0 };
   await c.route(/supabase\.co/, async (route) => {
     if (etat.horsLigne) return route.abort();
     const url = new URL(route.request().url());
+    if (url.pathname.endsWith("/auth/v1/token")) {
+      const b = JSON.parse(route.request().postData() || "{}");
+      if (b.password !== "bon") return route.fulfill({ status: 400, json: { error: "invalid_grant", error_description: "Invalid login credentials" } });
+      etat.connexions++;
+      return route.fulfill({ json: SESSION });
+    }
     const m = url.pathname.match(/\/rest\/v1\/(rpc\/)?([a-z_]+)/);
     if (!m) return route.fulfill({ json: {} });
     if (!m[1]) return route.fulfill({ json: db[m[2]] ?? [] });
     const body = JSON.parse(route.request().postData() || "{}");
     etat.rpc.push(m[2]);
     etat.bodies = etat.bodies || {}; etat.bodies[m[2]] = body;
-    if (body.p_pin !== "1234") return route.fulfill({ json: { ok: false, error: "PIN incorrect (4 essai(s) restant(s))." } });
+    if (m[2] === "is_approved") return route.fulfill({ json: etat.valide });
+    if (!etat.valide) return route.fulfill({ json: { ok: false, error: "Votre compte Index n'est pas encore valide : un administrateur doit l'approuver." } });
     if (m[2] === "save_element") {
       const p = body.p; const id = p.id || uid();
       db.elements = db.elements.filter((e) => e.id !== id).concat({ id, name: p.name, description: p.description, length_mm: p.length_mm, height_mm: p.height_mm, markup_pct: p.markup_pct, deleted_at: null, created_at: now, updated_at: new Date().toISOString() });
@@ -63,6 +75,12 @@ async function ctx({ gros = false, dark = false, largeur = 1440 } = {}) {
   page.on("dialog", (d) => { etat.natifs++; d.accept(); });
   return { c, page, etat, db };
 }
+const connecter = async (page, mdp) => {
+  await page.getByLabel("Email").fill("hugo@test.fr");
+  await page.getByLabel("Mot de passe").fill(mdp);
+  await page.getByRole("button", { name: "Se connecter" }).last().click();
+  await page.waitForTimeout(500);
+};
 const aller = async (page, chemin = "") => { await page.goto(BASE + chemin, { waitUntil: "networkidle" }); await page.waitForTimeout(500); };
 const shot = (page, f, full = true) => page.screenshot({ path: `${OUT}/${f}.png`, fullPage: full });
 const toasts = async (page) => (await page.locator("[data-sonner-toast]").allInnerTexts()).map((t) => t.replace(/\s+/g, " ")).join(" | ");
@@ -79,9 +97,9 @@ await step("Ecran principal", async () => {
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Masse v2.7 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
+  verif("Pied de page", pied === "Masse v2.8 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
   await page.getByRole("button", { name: "Conçu par Hugo N." }).click(); await page.waitForTimeout(200);
-  verif("Fenetre À propos", await page.getByRole("dialog").getByText("Version 2.7").isVisible());
+  verif("Fenetre À propos", await page.getByRole("dialog").getByText("Version 2.8").isVisible());
   await shot(page, "03-a-propos", false);
   await page.keyboard.press("Escape");
   verif("Format suisse dans la liste « 1'200 × 3'000 mm »", await page.getByText("1'200 × 3'000 mm").first().isVisible());
@@ -89,11 +107,11 @@ await step("Ecran principal", async () => {
   const graves = axe.violations.filter((v) => v.impact === "critical" || v.impact === "serious");
   verif("Accessibilite Elements : aucun defaut grave", !graves.length, graves.map((v) => `${v.id} ${v.nodes.length} : ${v.nodes.slice(0, 5).map((x) => x.target.join(" ") + " " + (x.any[0]?.data?.contrastRatio ?? "")).join(" ; ")}`).join(", "));
 
-  // Valeurs absurdes : signalees et enregistrement refuse (sans demander le PIN)
+  // Valeurs absurdes : signalees et enregistrement refuse (sans demander la connexion)
   await page.getByLabel("Largeur L (mm)").fill("-1000"); await page.keyboard.press("Tab");
   verif("Largeur negative signalee", await page.getByText("La largeur doit être supérieure à 0.").isVisible());
   await page.getByRole("button", { name: "Enregistrer" }).click(); await page.waitForTimeout(300);
-  verif("Largeur negative : enregistrement refuse", !(await page.getByText("Code PIN requis").isVisible()), await toasts(page));
+  verif("Largeur negative : enregistrement refuse", !(await page.getByRole("heading", { name: "Connexion" }).isVisible()), await toasts(page));
   await page.getByLabel("Largeur L (mm)").fill("1200"); await page.keyboard.press("Tab");
   await page.getByLabel("Composition verre").first().fill("abc"); await page.keyboard.press("Tab");
   verif("Composition de verre « abc » signalee", await page.getByText(/composition de verre non reconnue/).isVisible());
@@ -110,13 +128,15 @@ await step("Ecran principal", async () => {
   await page.waitForTimeout(200);
   verif("« Rester » garde la page", page.url().endsWith("/"));
 
-  // Enregistrement : PIN faux puis bon PIN
+  // Enregistrement sans compte : fenetre de connexion, mauvais mot de passe puis bon
   await page.getByLabel("Largeur L (mm)").fill("1250"); await page.keyboard.press("Tab");
   await page.getByRole("button", { name: "Enregistrer" }).click(); await page.waitForTimeout(300);
-  await page.getByLabel("Code PIN", { exact: true }).fill("0000"); await page.keyboard.press("Enter"); await page.waitForTimeout(400);
-  await page.getByLabel("Code PIN", { exact: true }).fill("1234"); await page.keyboard.press("Enter"); await page.waitForTimeout(900);
+  verif("Sans compte : l'enregistrement ouvre la connexion", await page.getByRole("heading", { name: "Connexion" }).isVisible());
+  await connecter(page, "mauvais");
+  verif("Mauvais mot de passe : message clair", await page.getByRole("alert").getByText("Email ou mot de passe incorrect.").isVisible());
+  await connecter(page, "bon"); await page.waitForTimeout(900);
   const t = await toasts(page);
-  verif("Bon PIN : plus de « PIN incorrect » affiche", !/PIN incorrect/.test(t), t);
+  verif("Bon mot de passe : connecte, aucune erreur", !/incorrect|Erreur|Connectez/.test(t), t);
   verif("Element enregistre", /enregistré/.test(t) && etat.rpc.includes("save_element"));
 
   // Fiche PDF telechargee directement
@@ -154,8 +174,8 @@ await step("Telephone", async () => {
   verif("Telephone : cibles tactiles assez grandes", m.petits.length === 0, m.petits.slice(0, 8).join(", "));
   const r = await new AxeBuilder({ page }).analyze();
   verif("Accessibilite telephone : aucun defaut", !r.violations.length, r.violations.map((v) => `${v.id} (${v.impact}) ${v.nodes.length} : ${v.nodes.slice(0, 2).map((x) => x.target.join(" ")).join(" ; ")}`).join(" | "));
-  await page.getByRole("button", { name: "Déverrouiller" }).click(); await page.waitForTimeout(300);
-  verif("Bouton « Déverrouiller » ouvre la fenetre du code PIN", await page.getByRole("dialog").getByText("La consultation est libre").isVisible());
+  await page.getByRole("button", { name: "Se connecter" }).click(); await page.waitForTimeout(300);
+  verif("Bouton « Se connecter » ouvre la fenetre de connexion", await page.getByRole("dialog").getByText("La consultation est libre").isVisible());
   await c.close();
 });
 
@@ -179,8 +199,8 @@ await step("Telephone : fenetres avec noms longs", async () => {
   };
   const debord = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   verif("Telephone : liste avec nom d'element tres long sans debordement", debord <= 0, `${debord} px`);
-  await page.getByRole("button", { name: "Déverrouiller" }).click();
-  await fenetre("Code PIN");
+  await page.getByRole("button", { name: "Se connecter" }).click();
+  await fenetre("Connexion");
   await page.keyboard.press("Escape"); await page.waitForTimeout(500);
   await page.getByRole("button", { name: "Supprimer" }).first().click();
   await fenetre("Supprimer element nom long");
@@ -230,7 +250,7 @@ for (const [chemin, nom] of [["materiaux", "Matériaux"], ["listes", "Listes"], 
 }
 
 await step("Lien vers une fiche Index", async () => {
-  const { c, page, etat } = await ctx();
+  const { c, page, etat } = await ctx({ connecte: true });
   await aller(page, "materiaux");
   await page.getByRole("button", { name: "Modifier" }).first().click(); await page.waitForTimeout(200);
   await page.getByRole("button", { name: "Lier une fiche Index" }).click(); await page.waitForTimeout(400);
@@ -240,9 +260,36 @@ await step("Lien vers une fiche Index", async () => {
   const href = await page.getByRole("link", { name: /Tôle alu EN AW-5754/ }).getAttribute("href");
   verif("Lien direct vers la fiche dans Index", href === "https://outils-hn.github.io/Index/?fiche=fiche-alu", href ?? "");
   await page.getByRole("button", { name: "Enregistrer" }).click(); await page.waitForTimeout(300);
-  await page.getByLabel("Code PIN", { exact: true }).fill("1234"); await page.keyboard.press("Enter"); await page.waitForTimeout(800);
+  await page.waitForTimeout(800);
   verif("Lien enregistré avec le matériau", etat.bodies?.save_material?.p?.index_id === "fiche-alu", JSON.stringify(etat.bodies?.save_material?.p?.index_id));
   await page.screenshot({ path: `${OUT}/30-lien-index.png`, fullPage: false });
+  await c.close();
+});
+
+await step("Comptes Index (2.8)", async () => {
+  // Compte connecte et valide : bandeau, ecriture directe, deconnexion
+  let { c, page, etat } = await ctx({ connecte: true });
+  await aller(page);
+  verif("Bandeau : « Connecté · email »", await page.getByText("Connecté · hugo@test.fr").isVisible());
+  await page.getByRole("button", { name: "Se déconnecter" }).click(); await page.waitForTimeout(500);
+  verif("Deconnexion : retour en « Lecture seule »", await page.getByText("Lecture seule").isVisible());
+  await c.close();
+  // Compte pas encore valide : lecture seule, message clair, rien d'ecrit
+  ({ c, page, etat } = await ctx({ connecte: true, valide: false }));
+  await aller(page, "materiaux");
+  verif("Compte non valide : bandeau « à valider »", await page.getByText("Compte à valider · lecture seule").isVisible());
+  await page.getByRole("button", { name: "Modifier" }).first().click(); await page.waitForTimeout(200);
+  await page.getByRole("button", { name: "Enregistrer" }).click(); await page.waitForTimeout(700);
+  const t = await toasts(page);
+  verif("Compte non valide : enregistrement refuse avec message", /pas encore valide/.test(t), t);
+  await shot(page, "31-compte-non-valide", false);
+  await c.close();
+  // Connexion depuis le bandeau
+  ({ c, page, etat } = await ctx());
+  await aller(page);
+  await page.getByRole("button", { name: "Se connecter" }).click(); await page.waitForTimeout(300);
+  await connecter(page, "bon"); await page.waitForTimeout(600);
+  verif("Connexion depuis le bandeau", await page.getByText("Connecté · hugo@test.fr").isVisible());
   await c.close();
 });
 

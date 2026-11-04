@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { db } from "./pin";
+import { db } from "./compte";
 import type { Material, ElementData, Component } from "./calc";
 
 export interface ElementRow extends ElementData { id: string; updated_at: string; deleted_at: string | null }

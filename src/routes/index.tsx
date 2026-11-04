@@ -2,7 +2,7 @@ import { createFileRoute, useBlocker } from "@tanstack/react-router";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useData, useRefresh, fmtDate, copyText, type ElementRow } from "@/lib/queries";
-import { write } from "@/lib/pin";
+import { write } from "@/lib/compte";
 import { ask, askLeave } from "@/lib/confirm";
 import { NumInput } from "@/components/NumInput";
 import { Etat } from "@/components/masse/Etat";
