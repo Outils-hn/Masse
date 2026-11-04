@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useData, useRefresh, fmtDate } from "@/lib/queries";
-import { write } from "@/lib/compte";
+import { jsonPermis, write } from "@/lib/compte";
 import { checkBackup, type Backup } from "@/lib/backup";
 import { Etat } from "@/components/masse/Etat";
 import { ask } from "@/lib/confirm";
@@ -42,6 +42,7 @@ function TrashPage() {
   };
 
   const exportJson = () => {
+    if (!jsonPermis()) return;
     const blob = new Blob([JSON.stringify({ app: "masse", version: 1, exported_at: new Date().toISOString(), ...data.raw }, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -49,6 +50,7 @@ function TrashPage() {
     a.click();
   };
   const importJson = async (f: File) => {
+    if (!jsonPermis()) return;
     let p: unknown;
     try {
       p = JSON.parse(await f.text());
@@ -94,10 +96,10 @@ function TrashPage() {
       </section>
       <section id="sauvegarde" className="panel scroll-mt-6 p-5">
         <h2 className="card-title">Sauvegarde</h2>
-        <p className="mt-2 text-sm text-muted-foreground">Exportez toute la bibliothèque, les éléments et les listes dans un fichier JSON. L'import demande d'être connecté.</p>
+        <p className="mt-2 text-sm text-muted-foreground">Exportez toute la bibliothèque, les éléments et les listes dans un fichier JSON. Sans compte, l'export et l'import de fichier JSON sont fermés.</p>
         <div className="mt-4 flex flex-wrap gap-2">
           <button className="btn btn-primary" onClick={exportJson}>Exporter (JSON)</button>
-          <label className="btn cursor-pointer">
+          <label className="btn cursor-pointer" onClickCapture={(e) => { if (!jsonPermis()) e.preventDefault(); }}>
             Importer (JSON)
             <input type="file" accept="application/json,.json" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) importJson(f); e.target.value = ""; }} />
           </label>

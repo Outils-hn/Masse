@@ -97,9 +97,9 @@ await step("Ecran principal", async () => {
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Masse v2.9 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
+  verif("Pied de page", pied === "Masse v2.10 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
   await page.getByRole("button", { name: "Conçu par Hugo N." }).click(); await page.waitForTimeout(200);
-  verif("Fenetre À propos", await page.getByRole("dialog").getByText("Version 2.9").isVisible());
+  verif("Fenetre À propos", await page.getByRole("dialog").getByText("Version 2.10").isVisible());
   await shot(page, "03-a-propos", false);
   await page.keyboard.press("Escape"); await page.waitForTimeout(500);
   verif("Format suisse dans la liste « 1'200 × 3'000 mm »", await page.getByText("1'200 × 3'000 mm").first().isVisible());
@@ -248,6 +248,15 @@ for (const [chemin, nom] of [["materiaux", "Matériaux"], ["listes", "Listes"], 
     await c.close();
   });
 }
+
+await step("JSON reserve aux comptes", async () => {
+  const { c, page } = await ctx();
+  await aller(page, "corbeille");
+  const [dl] = await Promise.all([page.waitForEvent("download", { timeout: 1500 }).catch(() => null), page.getByRole("button", { name: "Exporter (JSON)" }).click()]);
+  await page.waitForTimeout(300);
+  verif("Sans compte : pas d'export JSON, message « compte requis »", !dl && await page.getByText("Fichier JSON : compte requis").first().isVisible());
+  await c.close();
+});
 
 await step("Lien vers une fiche Index", async () => {
   const { c, page, etat } = await ctx({ connecte: true });
