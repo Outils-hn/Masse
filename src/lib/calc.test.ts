@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { parseNum, glassThickness, inputText, componentWeight, elementResult, type Material } from "./calc";
+import { fmt, parseNum, glassThickness, inputText, componentWeight, elementResult, type Material } from "./calc";
 
 const alu: Material = { id: "a", name: "Alu", category: "metal", mode: "density", value: 2700, source: "", note: "", deleted_at: null, updated_at: "" };
 
@@ -32,5 +32,14 @@ describe("calc", () => {
   it("total rounds up with 5 % markup", () => {
     const r = elementResult({ name: "x", description: "", length_mm: 1000, height_mm: 1200, markup_pct: 5, components: [{ material_id: "a", thickness_mm: 2, faces: 2, length_m: 0, count: 1, custom_area_m2: null, glass_composition: "" }] }, new Map([["a", alu]]));
     expect(r.total).toBe(14); // 13.608 -> 14
+  });
+});
+
+describe("lecture et affichage communs des nombres", () => {
+  it("refuse les saisies ambiguës et n'affiche jamais -0", () => {
+    expect(parseNum("1.250,5")).toBe(1250.5);
+    for (const s of ["12..5", "1,2,3", "1.250,5,2", "1e3", "0x1F"]) expect(Number.isNaN(parseNum(s))).toBe(true);
+    expect(fmt(-0.001, 2)).toBe("0,00");
+    expect(fmt(2700.5, 2)).toBe("2'700,50");
   });
 });
