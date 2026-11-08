@@ -73,7 +73,8 @@ export function parseNum(input: string | number | null | undefined): number {
 
 export function fmt(n: number, digits = 2): string {
   if (!isFinite(n)) return "—";
-  return n
+  const v = Math.abs(n) < 0.5 * 10 ** -digits ? 0 : n; // jamais « -0,00 »
+  return v
     .toLocaleString("fr-CH", { minimumFractionDigits: digits, maximumFractionDigits: digits })
     .replace(/[\u202f\u00a0]/g, "'");
 }
