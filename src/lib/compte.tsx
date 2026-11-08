@@ -5,12 +5,12 @@ import { toast } from "sonner";
 
 // Masse range ses donnees dans le projet Supabase d'INDEX et se connecte avec le meme compte.
 // Cle publique (« anon ») : elle ne donne que les droits prevus par les regles de la base.
-export const BASE_URL = "https://ngfzwfbraqkdcocdcmib.supabase.co";
+export const BASE_URL = "https://dtxgvwaqjmmffiiohika.supabase.co";
 const BASE_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5nZnp3ZmJyYXFrZGNvY2RjbWliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2Mzg2NTcsImV4cCI6MjA5NTIxNDY1N30.Ikovcm4eWkLvPO_PvkI8C8DJebBT011Rz87k_EYFdbU";
+  "sb_publishable_yEWGxFFSLTE1lJRXnFUmpg_dMwa6LxW";
 export const INDEX_URL = "https://outils-hn.github.io/Index";
 /** Meme cle de stockage qu'Index : la connexion est partagee entre les applis (meme site). */
-export const CLE_SESSION = "sb-ngfzwfbraqkdcocdcmib-auth-token";
+export const CLE_SESSION = "sb-dtxgvwaqjmmffiiohika-auth-token";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const db: any = createClient(BASE_URL, BASE_KEY, {

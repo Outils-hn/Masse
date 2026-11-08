@@ -35,7 +35,7 @@ function donnees({ gros = false } = {}) {
   return { materials, elements, components, lists, list_items, products };
 }
 
-const CLE = "sb-ngfzwfbraqkdcocdcmib-auth-token";
+const CLE = "sb-dtxgvwaqjmmffiiohika-auth-token";
 const b64 = (o) => Buffer.from(JSON.stringify(o)).toString("base64url");
 const SESSION = { access_token: `${b64({ alg: "HS256", typ: "JWT" })}.${b64({ sub: "u1", role: "authenticated", exp: 4102444800 })}.x`, token_type: "bearer", expires_in: 3600, expires_at: 4102444800, refresh_token: "r", user: { id: "u1", aud: "authenticated", email: "hugo@test.fr", app_metadata: {}, user_metadata: {}, created_at: "2026-01-01T00:00:00Z" } };
 // connecte : session deja ouverte (comme apres une connexion dans Index) ; valide : compte valide par un administrateur
@@ -97,7 +97,7 @@ await step("Ecran principal", async () => {
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Masse v2.12 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
+  verif("Pied de page", pied === "Masse v2.13 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
   await page.getByRole("button", { name: "Conçu par Hugo N." }).click(); await page.waitForTimeout(200);
   verif("Fenetre À propos", await page.getByRole("dialog").getByText("Version 2.12").isVisible());
   await shot(page, "03-a-propos", false);
