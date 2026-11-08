@@ -410,3 +410,9 @@ body { border-top: 3px solid var(--app); }
   .bandeau-marque button, .bandeau-marque a { min-height: 40px; }
   .btn, .btn-sm { min-height: 40px; min-width: 40px; }
 }
+
+/* Zones tactiles : les liens du pied de page se touchent facilement au doigt (zone invisible agrandie, rien ne bouge) */
+@media (pointer: coarse) {
+  footer a, footer button { position: relative; }
+  footer a::after, footer button::after { content: ""; position: absolute; inset: -14px -8px; }
+}

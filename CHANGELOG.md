@@ -4,6 +4,10 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.15 — 9 novembre 2026
+
+- Nouveauté : au téléphone, les liens du pied de page (« Conçu par », « Sauvegarde », « Suggestion / bug ») se touchent plus facilement.
+
 ## 2.14 — 9 novembre 2026
 
 - Nouveauté : un résultat qui s'arrondit à zéro s'affiche « 0,00 » et plus jamais « -0,00 » ; la lecture des nombres suit la même règle que les autres applis.
