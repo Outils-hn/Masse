@@ -399,7 +399,7 @@ function Editor({
                   <td><span className="inline-block h-2.5 w-2.5 rounded-[2px]" style={{ background: SEG[i % SEG.length] }} /></td>
                   <td>{l.m?.name ?? <span className="text-muted-foreground">— à choisir —</span>}</td>
                   <td className="num">{fmt(l.kg)}</td>
-                  <td className="num">{fmt(res.subtotal ? (l.kg / res.subtotal) * 100 : 0, 1)} %</td>
+                  <td className="num whitespace-nowrap">{fmt(res.subtotal ? (l.kg / res.subtotal) * 100 : 0, 1)} %</td>
                 </tr>
               ))}
               <tr><td></td><td>Sous-total sans majoration</td><td className="num">{fmt(res.subtotal)}</td><td></td></tr>

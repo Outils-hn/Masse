@@ -4,6 +4,10 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.16 — 9 novembre 2026
+
+- Nouveauté : au téléphone, les pourcentages du tableau de résultats ne se coupent plus en deux lignes, et un léger fondu indique qu'il reste des onglets à droite.
+
 ## 2.15 — 9 novembre 2026
 
 - Nouveauté : au téléphone, les liens du pied de page (« Conçu par », « Sauvegarde », « Suggestion / bug ») se touchent plus facilement.
