@@ -12,8 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
       # bun.lock pointe en partie vers le cache prive de Lovable : on installe
@@ -32,7 +32,7 @@ jobs:
           npx vitest run 2>&1 | tee step.log || { grep -E "FAIL|Error|expected|✗|×" step.log | head -n 20 | while IFS= read -r l; do echo "::error::$l"; done; exit 1; }
       - name: Garder les PDF de test
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pdf-test
           path: test-output/
