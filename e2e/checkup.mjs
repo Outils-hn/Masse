@@ -93,13 +93,13 @@ await step("Ecran principal", async () => {
   verif("Titre h1 « Masse » dans le selecteur", (await page.locator("h1").first().innerText()).trim() === "Masse");
   await page.getByRole("button", { name: "Changer d'application" }).click(); await page.waitForTimeout(200);
   const applis = await page.getByRole("menuitem").allInnerTexts();
-  verif("Selecteur : Accueil + 10 applis dans l'ordre", ["Accueil", "Rechercher", "Check", "Index", "Access", "Trame", "Linear", "Format", "Joint", "Masse", "Membrane", "Strate"].every((a, i) => applis[i]?.startsWith(a)), applis.map((t) => t.split(/\s/)[0]).join(", "));
+  verif("Selecteur : Accueil + 10 applis dans l'ordre", ["Accueil", "Check", "Index", "Access", "Trame", "Linear", "Format", "Joint", "Masse", "Membrane", "Strate"].every((a, i) => applis[i]?.startsWith(a)), applis.map((t) => t.split(/\s/)[0]).join(", "));
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Masse v2.23 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
+  verif("Pied de page", pied === "Masse v2.24 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
   await page.getByRole("button", { name: "Conçu par Hugo N." }).click(); await page.waitForTimeout(200);
-  verif("Fenetre À propos", await page.getByRole("dialog").getByText("Version 2.23").isVisible());
+  verif("Fenetre À propos", await page.getByRole("dialog").getByText("Version 2.24").isVisible());
   await shot(page, "03-a-propos", false);
   await page.keyboard.press("Escape"); await page.waitForTimeout(500);
   verif("Format suisse dans la liste « 1'200 × 3'000 mm »", await page.getByText("1'200 × 3'000 mm").first().isVisible());
