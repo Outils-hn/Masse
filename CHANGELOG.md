@@ -4,6 +4,10 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.20 — 10 novembre 2026
+
+- Nouveauté : le menu des applis propose « Noter » : ouvre Check dans un nouvel onglet avec une note déjà commencée par le numéro du chantier choisi dans l'Accueil.
+
 ## 2.19 — 10 novembre 2026
 
 - Nouveauté : dans le menu des applis, la ligne « Rechercher » est alignée avec les autres.
