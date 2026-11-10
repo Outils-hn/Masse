@@ -1,0 +1,45 @@
+OK     Titre h1 « Masse » dans le selecteur
+OK     Selecteur : Accueil + 10 applis dans l'ordre (Accueil, Access, Check, Format, Index, Joint, Linear, Masse, Membrane, Strate, Trame)
+OK     Pied de page (Masse v2.17 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug)
+OK     Fenetre À propos
+OK     Format suisse dans la liste « 1'200 × 3'000 mm »
+OK     Accessibilite Elements : aucun defaut grave
+OK     Largeur negative signalee
+OK     Largeur negative : enregistrement refuse (La largeur doit être supérieure à 0.)
+OK     Composition de verre « abc » signalee
+OK     Verre : pas de champ Faces / couches, épaisseur de verre affichée
+OK     Quitter avec des modifs : fenetre Épure
+OK     « Rester » garde la page
+OK     Sans compte : l'enregistrement ouvre la connexion
+OK     Mauvais mot de passe : message clair
+OK     Bon mot de passe : connecte, aucune erreur (Élément enregistré. | La largeur doit être supérieure à 0.)
+OK     Element enregistre
+OK     Noter dans Check : ouvre Check avec l'élément, ses dimensions et son poids (https://outils-hn.github.io/Check/?noter=Élément Cassette alu (1250 x 3000 mm) : 228 kg)
+OK     Fiche PDF telechargee (Fiche poids - Cassette alu.pdf)
+OK     Supprimer : fenetre Épure
+OK     Aucune fenetre native du navigateur (0)
+OK     Hors ligne : copie locale affichee (5924 ms)
+OK     Telephone : aucun debordement horizontal (0 px A.bandeau-onglet)
+OK     Telephone : cibles tactiles assez grandes
+OK     Accessibilite telephone : aucun defaut
+OK     Bouton « Se connecter » ouvre la fenetre de connexion
+OK     Telephone : liste avec nom d'element tres long sans debordement (0 px)
+OK     Telephone : fenetre « Connexion » sans debordement (0 px ;  ; page 0)
+OK     Telephone : fenetre « Supprimer element nom long » sans debordement (0 px ;  ; page 0)
+OK     Telephone : fenetre « A propos » sans debordement (0 px ;  ; page 0)
+OK     Hors ligne sans copie : message et bouton Réessayer (6035 ms)
+OK     50 composants / 207 materiaux : saisie fluide (< 300 ms par frappe) (96 / 97 / 88 ms)
+OK     Accessibilite Matériaux : aucun defaut grave
+OK     Accessibilite Listes : aucun defaut grave
+OK     Accessibilite Corbeille : aucun defaut grave
+OK     Sans compte : pas d'export JSON, message « compte requis »
+OK     Fiche Index choisie et affichée
+OK     Lien direct vers la fiche dans Index (https://outils-hn.github.io/Index/?fiche=fiche-alu)
+OK     Lien enregistré avec le matériau ("fiche-alu")
+OK     Bandeau : email seul
+OK     Deconnexion : retour en « Lecture seule »
+OK     Compte non valide : bandeau « à valider »
+OK     Compte non valide : enregistrement refuse avec message (Votre compte Index n'est pas encore valide : un administrateur doit l'approuver.)
+OK     Connexion depuis le bandeau
+OK     Mode sombre retenu
+OK     PDF : aucun nom d'auteur
