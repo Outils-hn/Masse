@@ -2,6 +2,7 @@ import { useSyncExternalStore, useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 import type { Session } from "@supabase/supabase-js";
 import { toast } from "sonner";
+import { nomAffiche } from "./nom-affiche";
 
 // Masse range ses donnees dans le projet Supabase d'INDEX et se connecte avec le meme compte.
 // Cle publique (« anon ») : elle ne donne que les droits prevus par les regles de la base.
@@ -17,8 +18,8 @@ export const db: any = createClient(BASE_URL, BASE_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, storageKey: CLE_SESSION, storage: typeof window !== "undefined" ? localStorage : undefined },
 });
 
-type Etat = { pret: boolean; email: string; uid: string | null; valide: boolean | null };
-const SERVEUR: Etat = { pret: false, email: "", uid: null, valide: null };
+type Etat = { pret: boolean; email: string; nom: string; uid: string | null; valide: boolean | null };
+const SERVEUR: Etat = { pret: false, email: "", nom: "", uid: null, valide: null };
 let etat: Etat = SERVEUR;
 const subs = new Set<() => void>();
 const emit = () => subs.forEach((f) => f());
@@ -27,7 +28,7 @@ let demarre = false;
 async function majSession(s: Session | null) {
   const uid = s?.user?.id ?? null;
   if (uid !== etat.uid || !etat.pret) {
-    etat = { pret: true, email: s?.user?.email ?? "", uid, valide: null };
+    etat = { pret: true, email: s?.user?.email ?? "", nom: nomAffiche(s?.user), uid, valide: null };
     emit();
   }
   if (!uid) return;
