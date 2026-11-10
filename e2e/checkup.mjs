@@ -93,7 +93,7 @@ await step("Ecran principal", async () => {
   verif("Titre h1 « Masse » dans le selecteur", (await page.locator("h1").first().innerText()).trim() === "Masse");
   await page.getByRole("button", { name: "Changer d'application" }).click(); await page.waitForTimeout(200);
   const applis = await page.getByRole("menuitem").allInnerTexts();
-  verif("Selecteur : Accueil + 10 applis dans l'ordre", ["Accueil", "Rechercher", "Access", "Check", "Format", "Index", "Joint", "Linear", "Masse", "Membrane", "Strate", "Trame"].every((a, i) => applis[i]?.startsWith(a)), applis.map((t) => t.split(/\s/)[0]).join(", "));
+  verif("Selecteur : Accueil + 10 applis dans l'ordre", ["Accueil", "Rechercher", "Noter", "Access", "Check", "Format", "Index", "Joint", "Linear", "Masse", "Membrane", "Strate", "Trame"].every((a, i) => applis[i]?.startsWith(a)), applis.map((t) => t.split(/\s/)[0]).join(", "));
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
