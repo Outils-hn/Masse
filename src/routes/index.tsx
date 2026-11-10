@@ -366,9 +366,9 @@ function Editor({
       </section>
 
       <section className="panel p-5">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="card-title">Résultats</h2>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <button className="btn btn-sm" onClick={noterDansCheck} title="Ouvre Check avec une note déjà rédigée">Noter dans Check</button>
             <button className="btn btn-sm" onClick={copy}>Copier le détail</button>
             <button className="btn btn-sm btn-primary" onClick={printFiche} title="Télécharge la fiche en PDF">Fiche PDF</button>
