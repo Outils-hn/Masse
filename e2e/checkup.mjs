@@ -97,9 +97,9 @@ await step("Ecran principal", async () => {
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Masse v2.16 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
+  verif("Pied de page", pied === "Masse v2.17 · Conçu par Hugo N. · 2026 · Sauvegarde · Suggestion / bug", pied);
   await page.getByRole("button", { name: "Conçu par Hugo N." }).click(); await page.waitForTimeout(200);
-  verif("Fenetre À propos", await page.getByRole("dialog").getByText("Version 2.16").isVisible());
+  verif("Fenetre À propos", await page.getByRole("dialog").getByText("Version 2.17").isVisible());
   await shot(page, "03-a-propos", false);
   await page.keyboard.press("Escape"); await page.waitForTimeout(500);
   verif("Format suisse dans la liste « 1'200 × 3'000 mm »", await page.getByText("1'200 × 3'000 mm").first().isVisible());
@@ -139,6 +139,9 @@ await step("Ecran principal", async () => {
   verif("Bon mot de passe : connecte, aucune erreur", !/incorrect|Erreur|Connectez/.test(t), t);
   verif("Element enregistre", /enregistré/.test(t) && etat.rpc.includes("save_element"));
 
+  { const [pop] = await Promise.all([page.waitForEvent("popup"), page.getByRole("button", { name: "Noter dans Check" }).click()]);
+    const u = decodeURIComponent(pop.url());
+    verif("Noter dans Check : ouvre Check avec l'élément, ses dimensions et son poids", u.startsWith("https://outils-hn.github.io/Check/?noter=Élément") && /mm\) : [\d'.]+ kg/.test(u), u); await pop.close().catch(() => {}); }
   // Fiche PDF telechargee directement
   const [dl] = await Promise.all([page.waitForEvent("download", { timeout: 20000 }), page.getByRole("button", { name: "Fiche PDF" }).click()]);
   await dl.saveAs(`${OUT}/fiche.pdf`);
