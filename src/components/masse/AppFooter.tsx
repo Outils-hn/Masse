@@ -1,4 +1,5 @@
 import { LienRetour } from "./LienRetour";
+import { RaccourcisApplis, useToucheAide } from "./RaccourcisApplis";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -11,6 +12,8 @@ import { MasseMark } from "./MasseMark";
  */
 export function AppFooter() {
   const [open, setOpen] = useState(false);
+  const [raccourcis, setRaccourcis] = useState(false);
+  useToucheAide(() => setRaccourcis(true));
   return (
     <footer className="py-4 text-center">
       <p className="inline-block rounded-md bg-background px-2 py-0.5 text-xs text-muted-foreground">
@@ -26,6 +29,7 @@ export function AppFooter() {
         <Link to="/corbeille" hash="sauvegarde" className="underline-offset-2 transition-colors hover:text-foreground hover:underline">
           Sauvegarde
         </Link>{" "}
+        · <button type="button" onClick={() => setRaccourcis(true)} className="text-inherit underline-offset-2 transition-colors hover:text-foreground hover:underline">Raccourcis</button>{" "}
         · <LienRetour app="Masse" version={APP_VERSION} />
       </p>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -46,6 +50,7 @@ export function AppFooter() {
           <p className="border-t border-border pt-3 text-xs text-muted-foreground">Dernière mise à jour : {APP_UPDATED}</p>
         </DialogContent>
       </Dialog>
+      <RaccourcisApplis app="Masse" open={raccourcis} onOpenChange={setRaccourcis} />
     </footer>
   );
 }
