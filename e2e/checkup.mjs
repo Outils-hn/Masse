@@ -97,9 +97,9 @@ await step("Ecran principal", async () => {
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Masse v2.28 · Conçu par Hugo N. · 2026 · Sauvegarde · Raccourcis · Suggestion / bug", pied);
-  await page.getByRole("button", { name: "Conçu par Hugo N." }).click(); await page.waitForTimeout(200);
-  verif("Fenetre À propos", await page.getByRole("dialog").getByText("Version 2.28").isVisible());
+  verif("Pied de page", pied === "Masse v2.29 · À propos · 2026 · Sauvegarde · Raccourcis · Suggestion / bug", pied);
+  await page.getByRole("button", { name: "À propos" }).click(); await page.waitForTimeout(200);
+  verif("Fenetre À propos", await page.getByRole("dialog").getByText("Version 2.29").isVisible());
   await shot(page, "03-a-propos", false);
   await page.keyboard.press("Escape"); await page.waitForTimeout(500);
   verif("Format suisse dans la liste « 1'200 × 3'000 mm »", await page.getByText("1'200 × 3'000 mm").first().isVisible());
@@ -208,7 +208,7 @@ await step("Telephone : fenetres avec noms longs", async () => {
   await page.getByRole("button", { name: "Supprimer" }).first().click();
   await fenetre("Supprimer element nom long");
   await page.getByRole("button", { name: "Annuler" }).click(); await page.waitForTimeout(400);
-  await page.getByRole("button", { name: "Conçu par Hugo N." }).click();
+  await page.getByRole("button", { name: "À propos" }).click();
   await fenetre("A propos");
   await c.close();
 });
@@ -284,7 +284,7 @@ await step("Comptes Index (2.8)", async () => {
   await aller(page);
   verif("Bandeau : email seul", await page.getByText("hugo@test.fr", { exact: true }).isVisible());
   await page.getByRole("button", { name: "Se déconnecter" }).click(); await page.waitForTimeout(500);
-  verif("Deconnexion : retour en « Lecture seule »", await page.getByText("Lecture seule").isVisible());
+  verif("Deconnexion : retour au bouton Se connecter", await page.getByRole("button", { name: "Se connecter" }).first().isVisible());
   await c.close();
   // Compte pas encore valide : lecture seule, message clair, rien d'ecrit
   ({ c, page, etat } = await ctx({ connecte: true, valide: false }));

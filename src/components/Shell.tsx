@@ -68,7 +68,6 @@ export function Shell({ children }: { children: ReactNode }) {
           </>
         ) : (
           <>
-            <span className="bandeau-statut">Lecture seule</span>
             <button className="bandeau-btn" onClick={() => seConnecter()}>Se connecter</button>
           </>
         )}

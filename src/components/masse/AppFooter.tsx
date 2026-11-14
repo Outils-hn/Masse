@@ -23,7 +23,7 @@ export function AppFooter() {
           onClick={() => setOpen(true)}
           className="text-inherit underline-offset-2 transition-colors hover:text-foreground hover:underline"
         >
-          Conçu par {APP_AUTHOR}
+          À propos
         </button>{" "}
         · {APP_YEAR} ·{" "}
         <Link to="/corbeille" hash="sauvegarde" className="underline-offset-2 transition-colors hover:text-foreground hover:underline">
