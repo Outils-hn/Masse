@@ -4,6 +4,10 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.30 — 15 novembre 2026
+
+- Nouveauté : le menu des applis propose maintenant Maquette (visionneuse de maquettes IFC).
+
 ## 2.29 — 14 novembre 2026
 
 - Nouveauté : en bas de page, le lien « Conçu par… » devient « À propos » ; les noms sont dans la fenêtre qui s'ouvre. Les liens du pied de page ont partout la même présentation (soulignés au survol seulement).
