@@ -83,6 +83,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Masse — poids des éléments de façade" },
+      { name: "robots", content: "noindex, nofollow" },
+      { name: "googlebot", content: "noindex, nofollow" },
       { name: "description", content: "Estimation du poids d'éléments de façade à partir de leurs composants." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
