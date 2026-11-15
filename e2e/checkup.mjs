@@ -99,7 +99,7 @@ await step("Ecran principal", async () => {
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
   verif("Pied de page", pied === "Masse v2.30 · À propos · 2026 · Sauvegarde · Raccourcis · Suggestion / bug", pied);
   await page.getByRole("button", { name: "À propos" }).click(); await page.waitForTimeout(200);
-  verif("Fenetre À propos", await page.getByRole("dialog").getByText("Version 2.29").isVisible());
+  verif("Fenetre À propos", await page.getByRole("dialog").getByText("Version 2.30").isVisible());
   await shot(page, "03-a-propos", false);
   await page.keyboard.press("Escape"); await page.waitForTimeout(500);
   verif("Format suisse dans la liste « 1'200 × 3'000 mm »", await page.getByText("1'200 × 3'000 mm").first().isVisible());
