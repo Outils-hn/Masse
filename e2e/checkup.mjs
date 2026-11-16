@@ -4,6 +4,7 @@
 import { chromium } from "playwright";
 import AxeBuilder from "@axe-core/playwright";
 import { mkdirSync, writeFileSync } from "node:fs";
+import { detailsVisuels } from "./details.mjs";
 
 const BASE = process.env.APP_URL ?? "http://127.0.0.1:8080/";
 const OUT = process.argv[2] ?? "captures";
@@ -82,7 +83,7 @@ const connecter = async (page, mdp) => {
   await page.waitForTimeout(500);
 };
 const aller = async (page, chemin = "") => { await page.goto(BASE + chemin, { waitUntil: "networkidle" }); await page.waitForTimeout(500); };
-const shot = (page, f, full = true) => page.screenshot({ path: `${OUT}/${f}.png`, fullPage: full });
+const shot = async (page, f, full = true) => { await page.screenshot({ path: `${OUT}/${f}.png`, fullPage: full }); await detailsVisuels(page, f, lignes); };
 const toasts = async (page) => (await page.locator("[data-sonner-toast]").allInnerTexts()).map((t) => t.replace(/\s+/g, " ")).join(" | ");
 const step = async (nom, fn) => { try { await fn(); } catch (e) { verif(nom, false, e.message.split("\n")[0].slice(0, 180)); } };
 
