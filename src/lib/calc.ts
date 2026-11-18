@@ -84,12 +84,12 @@ export function parseCalc(input: string | number | null | undefined): number {
   let i = 0;
   const expr = (): number => {
     let v = terme();
-    while (jetons[i] === "+" || jetons[i] === "-") { const op = jetons[i++]; const w = terme(); v = op === "+" ? v + w : v - w; }
+    while (jetons[i] === "+" || jetons[i] === "-") { const op = jetons[i++] ?? ""; const w = terme(); v = op === "+" ? v + w : v - w; }
     return v;
   };
   const terme = (): number => {
     let v = facteur();
-    while (/^[*×xX/÷]$/.test(jetons[i] ?? "")) { const op = jetons[i++]; const w = facteur(); v = /[*×xX]/.test(op) ? v * w : v / w; }
+    while (/^[*×xX/÷]$/.test(jetons[i] ?? "")) { const op = jetons[i++] ?? ""; const w = facteur(); v = /[*×xX]/.test(op) ? v * w : v / w; }
     return v;
   };
   const facteur = (): number => {
