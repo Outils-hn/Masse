@@ -82,3 +82,13 @@ export const fmtDate = (d?: string | null) =>
 export async function copyText(t: string) {
   await navigator.clipboard.writeText(t);
 }
+/** Copie un texte lisible ET un tableau HTML (Excel/Word collent des cellules, AutoCAD/mail collent le texte). */
+export async function copyTableau(t: { texte: string; html: string }) {
+  if (typeof ClipboardItem !== "undefined" && navigator.clipboard.write) {
+    try {
+      await navigator.clipboard.write([new ClipboardItem({ "text/plain": new Blob([t.texte], { type: "text/plain" }), "text/html": new Blob([t.html], { type: "text/html" }) })]);
+      return;
+    } catch { /* navigateur restrictif : on retombe sur le texte seul */ }
+  }
+  await navigator.clipboard.writeText(t.texte);
+}
