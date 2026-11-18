@@ -1,7 +1,8 @@
 import { createFileRoute, useBlocker } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { useData, useRefresh, copyText, fmtDate } from "@/lib/queries";
+import { detailListe } from "@/lib/detail";
+import { useData, useRefresh, copyTableau, fmtDate } from "@/lib/queries";
 import { write } from "@/lib/compte";
 import { NumInput } from "@/components/NumInput";
 import { Etat } from "@/components/masse/Etat";
@@ -101,17 +102,12 @@ function ListsPage() {
   };
 
   const copy = async () => {
-    const t = [
-      ["Liste", draft?.name ?? ""],
-      [],
-      ["Élément", "Quantité", "Poids unitaire (kg)", "Surface unitaire (m²)", "Poids total (kg)"],
-      ...rows.map((r) => [r.el?.name ?? "?", r.it.quantity, r.unit, fmt(r.area, 3).replace(/'/g, ""), r.unit * r.it.quantity]),
-      [],
-      ["Total", totN, "", fmt(totA, 3).replace(/'/g, ""), totW],
-      ["Poids moyen (kg/m²)", fmt(totA ? totW / totA : 0, 1).replace(/'/g, "")],
-    ];
-    await copyText(t.map((r) => r.join("\t")).join("\n"));
-    toast.success("Détail copié — collez-le dans Excel.");
+    await copyTableau(detailListe({
+      nom: draft?.name ?? "",
+      lignes: rows.map((r) => ({ nom: r.el?.name ?? "?", qte: r.it.quantity, unitaire: fmt(r.unit), surface: fmt(r.area, 3), total: fmt(r.unit * r.it.quantity) })),
+      totQte: totN, totSurface: fmt(totA, 3), totPoids: fmt(totW), moyen: fmt(totA ? totW / totA : 0, 1),
+    }));
+    toast.success("Détail copié : collez-le dans Excel, Word ou AutoCAD.");
   };
 
   return (

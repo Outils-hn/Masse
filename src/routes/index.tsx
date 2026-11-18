@@ -1,7 +1,8 @@
 import { createFileRoute, useBlocker } from "@tanstack/react-router";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { useData, useRefresh, fmtDate, copyText, type ElementRow } from "@/lib/queries";
+import { detailElement } from "@/lib/detail";
+import { useData, useRefresh, fmtDate, copyTableau, type ElementRow } from "@/lib/queries";
 import { write } from "@/lib/compte";
 import { ask, askLeave } from "@/lib/confirm";
 import { NumInput } from "@/components/NumInput";
@@ -274,20 +275,12 @@ function Editor({
     window.open(`https://outils-hn.github.io/Check/?noter=${encodeURIComponent(texte)}`, "_blank", "noopener,noreferrer");
   };
   const copy = async () => {
-    const rows = [
-      ["Élément", draft.name],
-      ["Dimensions (mm)", `${draft.length_mm} x ${draft.height_mm}`],
-      [],
-      ["Composant", "Mode", "Calcul", "Poids (kg)", "Part (%)"],
-      ...res.lines.map((l) => [l.m?.name ?? "?", l.m ? MODES[l.m.mode].label : "", l.formula, fmt(l.kg).replace(/'/g, ""), fmt(res.subtotal ? (l.kg / res.subtotal) * 100 : 0, 1)]),
-      [],
-      ["Sous-total", "", "", fmt(res.subtotal).replace(/'/g, "")],
-      [`Majoration ${draft.markup_pct} %`, "", "", fmt(res.markup).replace(/'/g, "")],
-      ["Poids total (arrondi)", "", "", String(res.total)],
-      ["Poids au m²", "", "", fmt(res.perM2).replace(/'/g, "")],
-    ];
-    await copyText(rows.map((r) => r.join("\t")).join("\n"));
-    toast.success("Détail copié — collez-le dans Excel.");
+    await copyTableau(detailElement({
+      nom: draft.name, dims: `${draft.length_mm} x ${draft.height_mm}`,
+      lignes: res.lines.map((l) => ({ nom: l.m?.name ?? "?", mode: l.m ? MODES[l.m.mode].label : "", calcul: l.formula, kg: fmt(l.kg), part: fmt(res.subtotal ? (l.kg / res.subtotal) * 100 : 0, 1) })),
+      sousTotal: fmt(res.subtotal), majLabel: `Majoration ${draft.markup_pct} %`, maj: fmt(res.markup), total: String(res.total), parM2: fmt(res.perM2),
+    }));
+    toast.success("Détail copié : collez-le dans Excel, Word ou AutoCAD.");
   };
 
   // La fiche doit refleter ce qui est en base : pas d'impression d'un brouillon
