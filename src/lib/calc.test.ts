@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { fmt, parseNum, glassThickness, inputText, componentWeight, elementResult, type Material } from "./calc";
+import { fmt, parseNum, parseCalc, glassThickness, inputText, componentWeight, elementResult, type Material } from "./calc";
 
 const alu: Material = { id: "a", name: "Alu", category: "metal", mode: "density", value: 2700, source: "", note: "", deleted_at: null, updated_at: "" };
 
@@ -41,5 +41,28 @@ describe("lecture et affichage communs des nombres", () => {
     for (const s of ["12..5", "1,2,3", "1.250,5,2", "1e3", "0x1F"]) expect(Number.isNaN(parseNum(s))).toBe(true);
     expect(fmt(-0.001, 2)).toBe("0,00");
     expect(fmt(2700.5, 2)).toBe("2'700,50");
+  });
+});
+
+describe("parseCalc : calculs dans les champs", () => {
+  it("multiplication, avec point ou virgule", () => {
+    expect(parseCalc("0.157*0.980")).toBeCloseTo(0.15386, 10);
+    expect(parseCalc("0,157 x 0,980")).toBeCloseTo(0.15386, 10);
+    expect(parseCalc("2×3")).toBe(6);
+  });
+  it("priorités, parenthèses, division, signes", () => {
+    expect(parseCalc("2+3*4")).toBe(14);
+    expect(parseCalc("(2+3)*4")).toBe(20);
+    expect(parseCalc("10/4")).toBe(2.5);
+    expect(parseCalc("-2*3")).toBe(-6);
+    expect(parseCalc("1'200*2")).toBe(2400);
+  });
+  it("un nombre simple se lit comme avant", () => {
+    expect(parseCalc("1'234,5")).toBe(1234.5);
+    expect(parseCalc("2.5")).toBe(2.5);
+    expect(parseCalc("-3")).toBe(-3);
+  });
+  it("calcul incomplet ou invalide : NaN", () => {
+    for (const s of ["0.157*", "*2", "2**3", "(2+3", "2+3)", "1/0", "1e3", "0x1F", "abc", "2 3 x", ""]) expect(Number.isNaN(parseCalc(s))).toBe(true);
   });
 });

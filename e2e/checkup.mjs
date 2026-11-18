@@ -98,9 +98,9 @@ await step("Ecran principal", async () => {
   await shot(page, "02-selecteur", false);
   await page.keyboard.press("Escape");
   const pied = (await page.locator("footer").innerText()).replace(/\s+/g, " ").trim();
-  verif("Pied de page", pied === "Masse v2.33 · À propos · 2026 · Sauvegarde · Raccourcis · Suggestion / bug", pied);
+  verif("Pied de page", pied === "Masse v2.34 · À propos · 2026 · Sauvegarde · Raccourcis · Suggestion / bug", pied);
   await page.getByRole("button", { name: "À propos" }).click(); await page.waitForTimeout(200);
-  verif("Fenetre À propos", await page.getByRole("dialog").getByText("Version 2.33").isVisible());
+  verif("Fenetre À propos", await page.getByRole("dialog").getByText("Version 2.34").isVisible());
   await shot(page, "03-a-propos", false);
   await page.keyboard.press("Escape"); await page.waitForTimeout(500);
   verif("Format suisse dans la liste « 1'200 × 3'000 mm »", await page.getByText("1'200 × 3'000 mm").first().isVisible());
@@ -113,6 +113,8 @@ await step("Ecran principal", async () => {
   verif("Largeur negative signalee", await page.getByText("La largeur doit être supérieure à 0.").isVisible());
   await page.getByRole("button", { name: "Enregistrer" }).click(); await page.waitForTimeout(300);
   verif("Largeur negative : enregistrement refuse", !(await page.getByRole("heading", { name: "Connexion" }).isVisible()), await toasts(page));
+  await page.getByLabel("Largeur L (mm)").fill("600*2"); await page.keyboard.press("Tab");
+  verif("Calcul dans un champ : 600*2 devient 1200", (await page.getByLabel("Largeur L (mm)").inputValue()) === "1200", await page.getByLabel("Largeur L (mm)").inputValue());
   await page.getByLabel("Largeur L (mm)").fill("1200"); await page.keyboard.press("Tab");
   await page.getByLabel("Composition verre").first().fill("abc"); await page.keyboard.press("Tab");
   verif("Composition de verre « abc » signalee", await page.getByText(/composition de verre non reconnue/).isVisible());

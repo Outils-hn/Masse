@@ -1,7 +1,7 @@
 import { memo, useEffect, useState } from "react";
-import { parseNum, inputText } from "@/lib/calc";
+import { parseCalc, inputText } from "@/lib/calc";
 
-/** Number field accepting comma, point and Swiss apostrophe. Commits on blur. */
+/** Champ numerique : virgule, point, apostrophe suisse, et petits calculs (0.157*0.980). Le resultat remplace le calcul en quittant le champ. */
 export const NumInput = memo(function NumInput({
   value,
   onChange,
@@ -31,7 +31,7 @@ export const NumInput = memo(function NumInput({
   useEffect(() => {
     if (!focus) setText(show(value));
   }, [value, focus]);
-  const bad = text.trim() !== "" && isNaN(parseNum(text));
+  const bad = text.trim() !== "" && isNaN(parseCalc(text));
   return (
     <input
       className={`field num ${bad || invalid ? "field-error" : ""} ${className}`}
@@ -44,7 +44,7 @@ export const NumInput = memo(function NumInput({
       onFocus={() => setFocus(true)}
       onChange={(e) => {
         setText(e.target.value);
-        const n = parseNum(e.target.value);
+        const n = parseCalc(e.target.value);
         if (!isNaN(n)) onChange(n);
         else if (allowEmpty && e.target.value.trim() === "") onChange(null);
       }}
