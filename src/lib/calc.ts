@@ -71,6 +71,38 @@ export function parseNum(input: string | number | null | undefined): number {
   return /^-?\d*\.?\d+$/.test(s) ? Number(s) : NaN;
 }
 
+/**
+ * Comme parseNum, mais accepte aussi un petit calcul : « 0.157*0.980 », « 1,2 x 3,4 », « (2+3)*1,5 », « 10/4 ».
+ * Operateurs : + - * × x / ÷ et parentheses. Retourne NaN si ce n'est ni un nombre ni un calcul valide.
+ */
+export function parseCalc(input: string | number | null | undefined): number {
+  const simple = parseNum(input);
+  if (!isNaN(simple) || typeof input !== "string") return simple;
+  const s = input.replace(/[\s\u00a0\u202f]/g, "");
+  if (!/[-+*×xX/÷()]/.test(s)) return NaN;
+  const jetons = s.match(/[0-9.,'’]+|[-+*×xX/÷()]|./g) ?? [];
+  let i = 0;
+  const expr = (): number => {
+    let v = terme();
+    while (jetons[i] === "+" || jetons[i] === "-") { const op = jetons[i++] ?? ""; const w = terme(); v = op === "+" ? v + w : v - w; }
+    return v;
+  };
+  const terme = (): number => {
+    let v = facteur();
+    while (/^[*×xX/÷]$/.test(jetons[i] ?? "")) { const op = jetons[i++] ?? ""; const w = facteur(); v = /[*×xX]/.test(op) ? v * w : v / w; }
+    return v;
+  };
+  const facteur = (): number => {
+    const t = jetons[i++];
+    if (t === "-") return -facteur();
+    if (t === "+") return facteur();
+    if (t === "(") { const v = expr(); if (jetons[i++] !== ")") return NaN; return v; }
+    return t === undefined ? NaN : parseNum(t);
+  };
+  const v = expr();
+  return i === jetons.length && isFinite(v) ? v : NaN;
+}
+
 export function fmt(n: number, digits = 2): string {
   if (!isFinite(n)) return "—";
   const v = Math.abs(n) < 0.5 * 10 ** -digits ? 0 : n; // jamais « -0,00 »

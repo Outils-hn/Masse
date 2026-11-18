@@ -4,6 +4,10 @@ Le numéro de version se met à jour dans `src/lib/version.ts` (pied de page et 
 
 Chaque version qui change quelque chose de visible pour l'équipe a une puce « Nouveauté : … », en langage courant : c'est la seule phrase affichée sur la page « Nouveautés » de l'Accueil.
 
+## 2.34 — 18 novembre 2026
+
+- Nouveauté : les champs de saisie acceptent les petits calculs, par exemple « 0.157*0.980 » ou « (2+3)*1,5 » (opérateurs + - * × / et parenthèses). Le résultat remplace le calcul quand on quitte le champ.
+
 ## 2.33 — 18 novembre 2026
 
 - Nouveauté : « Copier le détail » donne maintenant un texte lisible (une ligne par composant) quand on le colle dans AutoCAD, un mail ou le bloc-notes, et un vrai tableau quand on le colle dans Excel ou Word. Valable pour un élément et pour une liste.
